@@ -1,4 +1,4 @@
-package com.example.burbenrunner;
+package com.jlrutilities.burbenrunner;
 
 import org.junit.Test;
 
