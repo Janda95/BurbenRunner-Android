@@ -1,28 +1,35 @@
 package com.jlrutilities.burbenrunner;
 
+import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 public class RouteDatabaseHelper extends SQLiteOpenHelper {
+
+  // TAG
+  private static final String TAG = "DatabaseHelper";
 
   // Database Info
   private static final String DATABASE_NAME = "routesDatabase";
   private static final int DATABASE_VERSION = 1;
 
   // Table Names
-  private static final String TABLE_POSTS = "routes";
-  private static final String TABLE_USERS = "markers"; //STOPPED HERE
+  private static final String TABLE_ROUTES = "routes";
+  private static final String TABLE_MARKERS = "markers";
 
-  // Post Table Columns
-  private static final String KEY_POST_ID = "id";
-  private static final String KEY_POST_USER_ID_FK = "userId";
-  private static final String KEY_POST_TEXT = "text";
+  // Routes Table Columns
+  private static final String KEY_ROUTE_ID = "id";
+  private static final String KEY_ROUTE_NAME = "routeName";
 
-  // User Table Columns
-  private static final String KEY_USER_ID = "id";
-  private static final String KEY_USER_NAME = "userName";
-  private static final String KEY_USER_PROFILE_PICTURE_URL = "profilePictureUrl";
+  // Markers Table Columns
+  private static final String KEY_MARKER_ID = "id";
+  private static final String KEY_MARKER_ROUTE = "routeId";
+  private static final String KEY_MARKER_ORDER = "sequencePosition";
+  private static final String KEY_MARKER_LAT = "latitude";
+  private static final String KEY_MARKER_LONG = "longitude";
 
   public RouteDatabaseHelper(Context context) {
     super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -40,22 +47,23 @@ public class RouteDatabaseHelper extends SQLiteOpenHelper {
   // If a database already exists on disk with the same DATABASE_NAME, this method will NOT be called.
   @Override
   public void onCreate(SQLiteDatabase db) {
-    String CREATE_POSTS_TABLE = "CREATE TABLE " + TABLE_POSTS +
+    String CREATE_ROUTES_TABLE = "CREATE TABLE " + TABLE_ROUTES +
         "(" +
-        KEY_POST_ID + " INTEGER PRIMARY KEY," + // Define a primary key
-        KEY_POST_USER_ID_FK + " INTEGER REFERENCES " + TABLE_USERS + "," + // Define a foreign key
-        KEY_POST_TEXT + " TEXT" +
+        KEY_ROUTE_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " + // Primary key
+        KEY_ROUTE_NAME + " TEXT" + // Route name
         ")";
 
-    String CREATE_USERS_TABLE = "CREATE TABLE " + TABLE_USERS +
+    String CREATE_MARKERS_TABLE = "CREATE TABLE " + TABLE_MARKERS +
         "(" +
-        KEY_USER_ID + " INTEGER PRIMARY KEY," +
-        KEY_USER_NAME + " TEXT," +
-        KEY_USER_PROFILE_PICTURE_URL + " TEXT" +
+        KEY_MARKER_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+        KEY_MARKER_ORDER + " INTEGER, " +
+        KEY_MARKER_LAT + " DECIMAL(9,6), " +
+        KEY_MARKER_LONG + " DECIMAL(9,6), " +
+        KEY_MARKER_ROUTE + " INTEGER REFERENCES " + TABLE_ROUTES +
         ")";
 
-    db.execSQL(CREATE_POSTS_TABLE);
-    db.execSQL(CREATE_USERS_TABLE);
+    db.execSQL(CREATE_ROUTES_TABLE);
+    db.execSQL(CREATE_MARKERS_TABLE);
   }
 
   // Called when the database needs to be upgraded.
@@ -65,10 +73,35 @@ public class RouteDatabaseHelper extends SQLiteOpenHelper {
   public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
     if (oldVersion != newVersion) {
       // Simplest implementation is to drop all old tables and recreate them
-      db.execSQL("DROP TABLE IF EXISTS " + TABLE_POSTS);
-      db.execSQL("DROP TABLE IF EXISTS " + TABLE_USERS);
+      db.execSQL("DROP TABLE IF EXISTS " + TABLE_ROUTES);
+      db.execSQL("DROP TABLE IF EXISTS " + TABLE_MARKERS);
       onCreate(db);
     }
   }
-}
+  // Example setting value in db
+  public boolean addNewTable(String item) {
+    SQLiteDatabase db = this.getWritableDatabase();
+    ContentValues contentValues = new ContentValues();
+    contentValues.put(KEY_ROUTE_NAME, item);
+
+    // Log it
+    Log.d(TAG, "addData: Adding " + item + " to " + TABLE_ROUTES);
+
+    // Attempt to add it to DB and check
+    long result = db.insert(TABLE_ROUTES, null, contentValues);
+
+    // if inserted incorrectly it will return -1
+    if (result == -1){
+      return false;
+    } else {
+      return true;
+    }
+  }
+
+  public Cursor getData(){
+    SQLiteDatabase db = this.getWritableDatabase();
+    String query = "SELECT * FROM " + TABLE_ROUTES;
+    Cursor data = db.rawQuery(query, null);
+    return data;
+  }
 }

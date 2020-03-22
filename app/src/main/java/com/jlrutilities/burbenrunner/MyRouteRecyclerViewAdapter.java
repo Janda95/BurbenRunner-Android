@@ -2,31 +2,33 @@ package com.jlrutilities.burbenrunner;
 
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.jlrutilities.burbenrunner.RouteFragment.OnListFragmentInteractionListener;
-import com.jlrutilities.burbenrunner.dummy.DummyContent.DummyItem;
 
 import java.util.List;
 
-/**
- * {@link RecyclerView.Adapter} that can display a {@link DummyItem} and makes a call to the
- * specified {@link OnListFragmentInteractionListener}.
- * TODO: Replace the implementation with code for your data type.
- */
+
 public class MyRouteRecyclerViewAdapter extends RecyclerView.Adapter<MyRouteRecyclerViewAdapter.ViewHolder> {
 
-  private final List<DummyItem> mValues;
   private final OnListFragmentInteractionListener mListener;
 
-  public MyRouteRecyclerViewAdapter(List<DummyItem> items, OnListFragmentInteractionListener listener) {
-    mValues = items;
+  private final List<String> routesValues;
+  private final List<Integer> routesDBIds;
+
+
+  public MyRouteRecyclerViewAdapter(List<String> list, List<Integer> idList, OnListFragmentInteractionListener listener){
+    routesValues = list;
+    routesDBIds = idList;
     mListener = listener;
   }
 
+  // inflate the overall view, pass to single viewholder object
   @Override
   public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
     View view = LayoutInflater.from(parent.getContext())
@@ -34,11 +36,13 @@ public class MyRouteRecyclerViewAdapter extends RecyclerView.Adapter<MyRouteRecy
     return new ViewHolder(view);
   }
 
+  // holder set items based on values
   @Override
-  public void onBindViewHolder(final ViewHolder holder, int position) {
-    holder.mItem = mValues.get(position);
-    holder.mIdView.setText(mValues.get(position).id);
-    holder.mContentView.setText(mValues.get(position).content);
+  public void onBindViewHolder(final ViewHolder holder, final int position) {
+    holder.myString =  routesValues.get(position);
+    holder.mIdView.setText("" + position);
+    holder.mContentView.setText(routesValues.get(position));
+    //holder.myDbId = routesDBIds.get(position);
 
     holder.mView.setOnClickListener(new View.OnClickListener() {
       @Override
@@ -46,23 +50,28 @@ public class MyRouteRecyclerViewAdapter extends RecyclerView.Adapter<MyRouteRecy
         if (null != mListener) {
           // Notify the active callbacks interface (the activity, if the
           // fragment is attached to one) that an item has been selected.
-          mListener.onListFragmentInteraction(holder.mItem);
+          mListener.onListFragmentInteraction(position, holder.myDbId, holder.myString);
         }
       }
     });
   }
 
+  // values size
   @Override
   public int getItemCount() {
-    return mValues.size();
+    return routesValues.size();
   }
 
+  // needed to inflate single view
   public class ViewHolder extends RecyclerView.ViewHolder {
     public final View mView;
     public final TextView mIdView;
     public final TextView mContentView;
-    public DummyItem mItem;
+    //public DummyItem mItem;
+    public String myString;
+    public Integer myDbId;
 
+    // set local items and set single row view
     public ViewHolder(View view) {
       super(view);
       mView = view;

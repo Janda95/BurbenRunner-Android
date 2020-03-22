@@ -11,8 +11,8 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.jlrutilities.burbenrunner.dummy.DummyContent;
-import com.jlrutilities.burbenrunner.dummy.DummyContent.DummyItem;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A fragment representing a list of Items.
@@ -27,6 +27,7 @@ public class RouteFragment extends Fragment {
   // TODO: Customize parameters
   private int mColumnCount = 1;
   private OnListFragmentInteractionListener mListener;
+  private List<String> exampleList;
 
   /**
    * Mandatory empty constructor for the fragment manager to instantiate the
@@ -48,6 +49,10 @@ public class RouteFragment extends Fragment {
   @Override
   public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
+    exampleList = new ArrayList<>();
+    for(int i = 10; i < 12; i++){
+      exampleList.add("Number: " + i + " ");
+    }
 
     if (getArguments() != null) {
       mColumnCount = getArguments().getInt(ARG_COLUMN_COUNT);
@@ -68,7 +73,7 @@ public class RouteFragment extends Fragment {
       } else {
         recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
       }
-      recyclerView.setAdapter(new MyRouteRecyclerViewAdapter(DummyContent.ITEMS, mListener));
+      recyclerView.setAdapter(new MyRouteRecyclerViewAdapter(exampleList, mListener));
     }
     return view;
   }
@@ -103,6 +108,6 @@ public class RouteFragment extends Fragment {
    */
   public interface OnListFragmentInteractionListener {
     // TODO: Update argument type and name
-    void onListFragmentInteraction(DummyItem item);
+    void onListFragmentInteraction(int id, int position, String name);
   }
 }
