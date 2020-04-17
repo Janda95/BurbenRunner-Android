@@ -1,14 +1,14 @@
 package com.jlrutilities.burbenrunner;
 
-import androidx.fragment.app.FragmentActivity;
-
+import android.content.Intent;
 import android.graphics.Color;
 import android.location.Location;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.CheckBox;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.fragment.app.FragmentActivity;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
@@ -47,10 +47,23 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
   private boolean routeMode;
   private double distance;
 
+  //intent info
+  private int listPosition;
+  private int mapId;
+  private String mapName;
+
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_maps);
+
+    //Intent Map Information
+    Intent intent = getIntent();
+    listPosition = intent.getIntExtra("list_position", -1);
+    mapId = intent.getIntExtra("map_id", -1);
+    mapName =intent.getStringExtra("map_name");
+
+
     // Obtain the SupportMapFragment and get notified when the map is ready to be used.
     SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
         .findFragmentById(R.id.map);
@@ -64,9 +77,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     // TextView
     tvInfo = findViewById(R.id.info_text_view);
     if (isMetric) {
-      tvInfo.setText(" Distance: \n 0.00 km");
+      tvInfo.setText(mapName +"\n Distance: \n 0.00 km");
     } else {
-      tvInfo.setText(" Distance: \n 0.00 mi");
+      tvInfo.setText(mapName +"\n Distance: \n 0.00 mi");
     }
 
     // FAB

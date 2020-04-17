@@ -40,9 +40,11 @@ public class MyRouteRecyclerViewAdapter extends RecyclerView.Adapter<MyRouteRecy
   @Override
   public void onBindViewHolder(final ViewHolder holder, final int position) {
     holder.myString =  routesValues.get(position);
+    holder.myDbId = routesDBIds.get(position);
+
     holder.mIdView.setText("" + position);
     holder.mContentView.setText(routesValues.get(position));
-    //holder.myDbId = routesDBIds.get(position);
+    holder.mContentIdView.setText("" + routesDBIds.get(position));
 
     holder.mView.setOnClickListener(new View.OnClickListener() {
       @Override
@@ -64,10 +66,12 @@ public class MyRouteRecyclerViewAdapter extends RecyclerView.Adapter<MyRouteRecy
 
   // needed to inflate single view
   public class ViewHolder extends RecyclerView.ViewHolder {
+
     public final View mView;
     public final TextView mIdView;
     public final TextView mContentView;
-    //public DummyItem mItem;
+    public final TextView mContentIdView;
+
     public String myString;
     public Integer myDbId;
 
@@ -77,6 +81,7 @@ public class MyRouteRecyclerViewAdapter extends RecyclerView.Adapter<MyRouteRecy
       mView = view;
       mIdView = (TextView) view.findViewById(R.id.item_number);
       mContentView = (TextView) view.findViewById(R.id.content);
+      mContentIdView = (TextView) view.findViewById(R.id.content_id);
     }
 
     @Override

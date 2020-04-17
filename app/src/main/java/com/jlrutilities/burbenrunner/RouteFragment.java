@@ -28,6 +28,7 @@ public class RouteFragment extends Fragment {
   private int mColumnCount = 1;
   private OnListFragmentInteractionListener mListener;
   private List<String> exampleList;
+  private List<Integer> exampleNumbers;
 
   /**
    * Mandatory empty constructor for the fragment manager to instantiate the
@@ -54,6 +55,11 @@ public class RouteFragment extends Fragment {
       exampleList.add("Number: " + i + " ");
     }
 
+    for(int i = 10; i < 12; i++){
+      exampleNumbers.add(i);
+    }
+
+
     if (getArguments() != null) {
       mColumnCount = getArguments().getInt(ARG_COLUMN_COUNT);
     }
@@ -73,7 +79,7 @@ public class RouteFragment extends Fragment {
       } else {
         recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
       }
-      recyclerView.setAdapter(new MyRouteRecyclerViewAdapter(exampleList, mListener));
+      recyclerView.setAdapter(new MyRouteRecyclerViewAdapter(exampleList, exampleNumbers, mListener));
     }
     return view;
   }
@@ -108,6 +114,6 @@ public class RouteFragment extends Fragment {
    */
   public interface OnListFragmentInteractionListener {
     // TODO: Update argument type and name
-    void onListFragmentInteraction(int id, int position, String name);
+    void onListFragmentInteraction(int position, int id, String name);
   }
 }

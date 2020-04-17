@@ -4,13 +4,9 @@
     <item android:id="@+id/testAdd"
         android:title="Add"
         app:showAsAction="always"
-        android:onClick="addData"/>
+        android:onClick="newRoute"/>
     <item android:id="@+id/testClear"
         android:title="Clear"
         app:showAsAction="always"
         android:onClick="clearData"/>
-    <item android:id="@+id/testEdit"
-        android:title="testEdit"
-        app:showAsAction="always"
-        android:onClick=""/>
 </menu>

@@ -14,7 +14,7 @@ public class RouteDatabaseHelper extends SQLiteOpenHelper {
 
   // Database Info
   private static final String DATABASE_NAME = "routesDatabase";
-  private static final int DATABASE_VERSION = 1;
+  private static final int DATABASE_VERSION = 6;
 
   // Table Names
   private static final String TABLE_ROUTES = "routes";
@@ -26,8 +26,8 @@ public class RouteDatabaseHelper extends SQLiteOpenHelper {
 
   // Markers Table Columns
   private static final String KEY_MARKER_ID = "id";
-  private static final String KEY_MARKER_ROUTE = "routeId";
-  private static final String KEY_MARKER_ORDER = "sequencePosition";
+  private static final String KEY_MARKER_MAP_ID = "routeid";
+  private static final String KEY_MARKER_ORDER = "sequenceposition";
   private static final String KEY_MARKER_LAT = "latitude";
   private static final String KEY_MARKER_LONG = "longitude";
 
@@ -59,7 +59,8 @@ public class RouteDatabaseHelper extends SQLiteOpenHelper {
         KEY_MARKER_ORDER + " INTEGER, " +
         KEY_MARKER_LAT + " DECIMAL(9,6), " +
         KEY_MARKER_LONG + " DECIMAL(9,6), " +
-        KEY_MARKER_ROUTE + " INTEGER REFERENCES " + TABLE_ROUTES +
+        KEY_MARKER_MAP_ID + " INTEGER, " +
+        "FOREIGN KEY(" + KEY_MARKER_MAP_ID + ") REFERENCES " + TABLE_ROUTES + "(" + KEY_ROUTE_ID + ")" +
         ")";
 
     db.execSQL(CREATE_ROUTES_TABLE);
@@ -103,5 +104,11 @@ public class RouteDatabaseHelper extends SQLiteOpenHelper {
     String query = "SELECT * FROM " + TABLE_ROUTES;
     Cursor data = db.rawQuery(query, null);
     return data;
+  }
+
+  public void clearTables() {
+    SQLiteDatabase db = this.getWritableDatabase();
+    db.delete(TABLE_ROUTES, null, null);
+
   }
 }

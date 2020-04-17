@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/dialog_newMapTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorPrimary"
+        android:contentDescription="@string/app_name"
+        android:gravity="center_vertical|center_horizontal"
+        android:text="New Map Name"
+        android:textColor="#FFFFFF"
+        android:textSize="24sp" />
+
+
+    <EditText
+        android:id="@+id/dialog_newMapEntry"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginBottom="4dp"
+        android:hint=""/>
+
+    <TextView
+        android:id="@+id/dialog_newMapParams"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginBottom="4dp"
+        android:fontFamily="sans-serif"
+        android:text="Parameters"
+        android:textColor="@color/colorDefaultText"
+        android:textSize="10sp" />
+</LinearLayout>
