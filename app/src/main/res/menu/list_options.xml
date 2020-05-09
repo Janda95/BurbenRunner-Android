@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
-    <item android:id="@+id/testAdd"
-        android:title="Add"
+    <item android:id="@+id/listNewRouteMenu"
+        android:title="+"
         app:showAsAction="always"
         android:onClick="newRoute"/>
-    <item android:id="@+id/testClear"
-        android:title="Clear"
+    <item android:id="@+id/listHelpMenu"
+        android:title="Help"
         app:showAsAction="always"
-        android:onClick="clearData"/>
+        android:onClick="displayListHelpDialog"/>
 </menu>

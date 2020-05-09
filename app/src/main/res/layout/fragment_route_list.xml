@@ -6,8 +6,7 @@
     android:name="com.jlrutilities.burbenrunner.RouteFragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_marginLeft="16dp"
-    android:layout_marginRight="16dp"
     app:layoutManager="LinearLayoutManager"
     tools:context="com.jlrutilities.burbenrunner.RouteFragment"
-    tools:listitem="@layout/fragment_route" />
+    tools:listitem="@layout/fragment_route_list_item"
+    />
