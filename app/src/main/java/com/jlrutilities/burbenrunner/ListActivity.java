@@ -13,9 +13,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.DialogFragment;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.List;
 
 public class ListActivity extends AppCompatActivity implements CreateRouteDialogFragment.CreateRouteDialogListener {
 
@@ -23,15 +21,12 @@ public class ListActivity extends AppCompatActivity implements CreateRouteDialog
 
   // Recycler View
   private RecyclerView recyclerView;
-  //private DummyContent dummyContent;
   private RecyclerView.Adapter adapter;
   RouteFragment.OnListFragmentInteractionListener listener;
 
-  private List<String> exampleList;
-  private List<Integer> exampleNumbers;
-
   ArrayList<Integer> listIntegerData;
   ArrayList<String> listStringData;
+  ArrayList<Double> listDoubleData;
 
   // Database
   RouteDatabaseHelper mDatabaseHelper;
@@ -39,7 +34,7 @@ public class ListActivity extends AppCompatActivity implements CreateRouteDialog
   @Override
   protected void onCreate(@Nullable Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    setContentView(R.layout.main_activity);
+    setContentView(R.layout.activity_main);
 
     // Database
     mDatabaseHelper = new RouteDatabaseHelper(this);
@@ -47,29 +42,27 @@ public class ListActivity extends AppCompatActivity implements CreateRouteDialog
     //Main view
     recyclerView = findViewById(R.id.include_list_fragment);
 
-
-    // Recycler View with Adapter with example
-    /*exampleList = new ArrayList<>();
-    exampleNumbers = new ArrayList<>();
-    for(int i = 0; i < 9; i++){ exampleList.add("Number: " + i + " "); }
-    for(int i = 10; i < 19; i++){ exampleNumbers.add(i); }*/
-
-    //adapter = new MyRouteRecyclerViewAdapter(exampleList, exampleNumbers, listener);
-    //recyclerView.setAdapter(adapter);
-
     // my own version
     listIntegerData = new ArrayList<>();
     listStringData = new ArrayList<>();
+    listDoubleData = new ArrayList<>();
 
     listener = new RouteFragment.OnListFragmentInteractionListener() {
       @Override
-      public void onListFragmentInteraction(int position, int id, String name) {
-        //intent!
+      public void onClickListFragmentInteraction(int position, int id, String name) {
+        // Transition to MapsActivity
         Intent intent = new Intent(getApplicationContext(), MapsActivity.class);
+        intent.putExtra("isNewMap", false);
         intent.putExtra("list_position", position);
         intent.putExtra("map_id", id);
         intent.putExtra("map_name", name);
         startActivity(intent);
+      }
+
+      @Override
+      public void onLongClickListFragmentInteraction(int position, int id) {
+        // Ask user if they want to delete the route then delete or leave alone
+
       }
     };
 
@@ -96,19 +89,22 @@ public class ListActivity extends AppCompatActivity implements CreateRouteDialog
   }
 
   public void newRoute(MenuItem item){
-    CreateRouteDialogFragment dialogFragment = CreateRouteDialogFragment.newInstance();
-    dialogFragment.show(getSupportFragmentManager(), "DIALOG_FRAGMENT");
+    //CreateRouteDialogFragment dialogFragment = CreateRouteDialogFragment.newInstance();
+    //dialogFragment.show(getSupportFragmentManager(), "DIALOG_FRAGMENT");
+    Intent intent = new Intent(getApplicationContext(), MapsActivity.class);
+    intent.putExtra("isNewMap", true);
+    startActivity(intent);
   }
 
-  public void clearData(MenuItem item){
-    mDatabaseHelper.clearTables();
-    populateListData();
+  public void displayListHelpDialog(MenuItem item){
+    /*mDatabaseHelper.clearTables();
+    populateListData();*/
   }
 
   private void populateListData(){
     Log.d(TAG, "populateListView: Displaying data in the ListView.");
 
-    Cursor data = mDatabaseHelper.getData();
+    Cursor data = mDatabaseHelper.getRoutes();
     // walking through cursor getting id and map name
     if(data == null){
       toastMessage("Error: Database Cursor is null");
@@ -116,14 +112,16 @@ public class ListActivity extends AppCompatActivity implements CreateRouteDialog
     } else {
       listIntegerData.clear();
       listStringData.clear();
+      listIntegerData.clear();
       while(data.moveToNext()){
         listIntegerData.add(Integer.valueOf(data.getString(0)));
         listStringData.add(data.getString(1));
+        listDoubleData.add(data.getDouble(2));
       }
     }
 
     //adapt!!!!
-    adapter = new MyRouteRecyclerViewAdapter(listStringData, listIntegerData, listener);
+    adapter = new MyRouteRecyclerViewAdapter(listStringData, listIntegerData, listDoubleData, listener);
     recyclerView.setAdapter(adapter);
   }
 

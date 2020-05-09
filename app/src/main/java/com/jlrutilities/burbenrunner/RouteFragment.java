@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,6 +30,7 @@ public class RouteFragment extends Fragment {
   private OnListFragmentInteractionListener mListener;
   private List<String> exampleList;
   private List<Integer> exampleNumbers;
+  private List<Double> exampleDistance;
 
   /**
    * Mandatory empty constructor for the fragment manager to instantiate the
@@ -50,13 +52,14 @@ public class RouteFragment extends Fragment {
   @Override
   public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    exampleList = new ArrayList<>();
-    for(int i = 10; i < 12; i++){
-      exampleList.add("Number: " + i + " ");
-    }
 
-    for(int i = 10; i < 12; i++){
+    exampleList = new ArrayList<>();
+    exampleDistance = new ArrayList<>();
+
+    for(int i = 10; i < 12; i++) {
+      exampleList.add("Number: " + i + " ");
       exampleNumbers.add(i);
+      exampleDistance.add(i * 1.12);
     }
 
 
@@ -79,7 +82,7 @@ public class RouteFragment extends Fragment {
       } else {
         recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
       }
-      recyclerView.setAdapter(new MyRouteRecyclerViewAdapter(exampleList, exampleNumbers, mListener));
+      recyclerView.setAdapter(new MyRouteRecyclerViewAdapter(exampleList, exampleNumbers, exampleDistance, mListener));
     }
     return view;
   }
@@ -114,6 +117,8 @@ public class RouteFragment extends Fragment {
    */
   public interface OnListFragmentInteractionListener {
     // TODO: Update argument type and name
-    void onListFragmentInteraction(int position, int id, String name);
+    void onClickListFragmentInteraction(int position, int id, String name);
+
+    void onLongClickListFragmentInteraction(int position, int id);
   }
 }

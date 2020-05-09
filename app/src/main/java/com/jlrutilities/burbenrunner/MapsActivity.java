@@ -1,6 +1,7 @@
 package com.jlrutilities.burbenrunner;
 
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Color;
 import android.location.Location;
 import android.os.Bundle;
@@ -28,7 +29,9 @@ import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Deque;
 import java.util.List;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
@@ -44,24 +47,46 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
   TextView tvInfo;
   private int index = 0;
   private boolean isMetric;
-  private boolean routeMode;
   private double distance;
 
   //intent info
   private int listPosition;
   private int mapId;
   private String mapName;
+  private boolean isNewMap;
+
+  // Database
+  RouteDatabaseHelper mDatabaseHelper;
+
+  Deque<MarkerHistoryItem> historyStack;
+
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_maps);
 
+    // Database
+    mDatabaseHelper = new RouteDatabaseHelper(this);
+
     //Intent Map Information
-    Intent intent = getIntent();
-    listPosition = intent.getIntExtra("list_position", -1);
-    mapId = intent.getIntExtra("map_id", -1);
-    mapName =intent.getStringExtra("map_name");
+    final Intent intent = getIntent();
+    isNewMap = intent.getBooleanExtra("isNewMap", true);
+    if (isNewMap){
+      // new map! Need to create in DB on Save
+      listPosition = -1;
+      mapId = -1;
+      mapName = "";
+    } else {
+      // already established map
+      listPosition = intent.getIntExtra("list_position", -1);
+      mapId = intent.getIntExtra("map_id", -1);
+      mapName =intent.getStringExtra("map_name");
+    }
+
+    // default settings
+    isMetric = false;
+    historyStack = new ArrayDeque<>();
 
 
     // Obtain the SupportMapFragment and get notified when the map is ready to be used.
@@ -70,17 +95,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     mapFragment.getMapAsync(this);
     fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
-    // default setting
-    isMetric = false;
-    routeMode = false;
-
     // TextView
     tvInfo = findViewById(R.id.info_text_view);
-    if (isMetric) {
-      tvInfo.setText(mapName +"\n Distance: \n 0.00 km");
-    } else {
-      tvInfo.setText(mapName +"\n Distance: \n 0.00 mi");
-    }
+    setInfoBox(0.00);
 
     // FAB
     FloatingActionButton fabMyLocation = findViewById(R.id.fab_my_location);
@@ -113,16 +130,25 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     fabAdd.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View view) {
-        //middle button
-        if (routeMode){
-        } else {
+        // green plus
+        //save to DB
+        mDatabaseHelper.clearMarkers(mapId);
+
+        for( int i = 0; i < markers.size(); i++){
+          Marker marker = markers.get(i);
+          LatLng position = marker.getPosition();
+          mDatabaseHelper.saveMarker(i, position.latitude, position.longitude, mapId);
         }
+
+        Intent intent = new Intent(getApplicationContext(), ListActivity.class);
+        startActivity(intent);
       }
     });
 
     fabClear.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View view) {
+        // red x
         removeEverything();
       }
     });
@@ -164,16 +190,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
       @Override
       public View getInfoContents(Marker marker) {
         View view = getLayoutInflater().inflate(R.layout.info_window, null);
-        TextView tvLocality = view.findViewById(R.id.tvLocality);
+        //TextView tvLocality = view.findViewById(R.id.tvLocality);
         TextView tvLat = view.findViewById(R.id.tvLat);
         TextView tvLng = view.findViewById(R.id.tvLng);
-        TextView tvSnippet = view.findViewById(R.id.tvSnippet);
+        //TextView tvSnippet = view.findViewById(R.id.tvSnippet);
 
         LatLng latLng = marker.getPosition();
-        tvLocality.setText(marker.getTitle());
+        //tvLocality.setText(marker.getTitle());
         tvLat.setText("Latitude: " + latLng.latitude);
         tvLng.setText("Longitude: " + latLng.longitude);
-        tvSnippet.setText(marker.getSnippet());
+        //tvSnippet.setText(marker.getSnippet());
 
         return view;
       }
@@ -224,6 +250,20 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
       }
     });
+
+    // get route data
+    if(isNewMap == false) {
+      Cursor cursor = mDatabaseHelper.getMarkers(mapId);
+      if (cursor != null) {
+        while (cursor.moveToNext()) {
+          addMarker(cursor.getDouble(2), cursor.getDouble(3));
+        /*
+        listIntegerData.add(Integer.valueOf(data.getString(0)));
+        listStringData.add(data.getString(1));
+         */
+        }
+      }
+    }
   }
 
   //private void addMarker(Address address, double lat, double lng){
@@ -256,12 +296,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
       finalResult += result[0];
     }
 
+    setInfoBox(finalResult);
+  }
+
+  private void setInfoBox(double dist){
     if (isMetric) {
-      double metersToKm = finalResult * 0.001;
-      tvInfo.setText(String.format(" Distance: \n %.2f mi", metersToKm));
+      double metersToKm = dist * 0.001;
+      tvInfo.setText(String.format(" \nDistance: \n %.2f mi", metersToKm));
     } else {
-      double metersToMiles = finalResult * 0.00062137;
-      tvInfo.setText(String.format(" Distance: \n %.2f mi", metersToMiles));
+      double metersToMiles = dist * 0.00062137;
+      tvInfo.setText(String.format( mapName +"\n Distance: \n %.2f mi ", metersToMiles));
     }
   }
 

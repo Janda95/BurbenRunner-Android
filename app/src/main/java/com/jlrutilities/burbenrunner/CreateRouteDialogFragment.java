@@ -129,7 +129,7 @@ public class CreateRouteDialogFragment extends DialogFragment {
   }
 
   private boolean isNameValid(String mapName){
-    if(mapName.length() == 0 || mapName.length() >= maxNameLength+1){
+    if(mapName.length() == 0 || mapName.length() >= maxNameLength+1 ){
       return false;
     }
 

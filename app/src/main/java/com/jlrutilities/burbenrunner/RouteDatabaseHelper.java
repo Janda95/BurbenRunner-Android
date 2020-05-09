@@ -14,22 +14,25 @@ public class RouteDatabaseHelper extends SQLiteOpenHelper {
 
   // Database Info
   private static final String DATABASE_NAME = "routesDatabase";
-  private static final int DATABASE_VERSION = 6;
+  private static final int DATABASE_VERSION = 23;
 
   // Table Names
   private static final String TABLE_ROUTES = "routes";
   private static final String TABLE_MARKERS = "markers";
 
   // Routes Table Columns
-  private static final String KEY_ROUTE_ID = "id";
-  private static final String KEY_ROUTE_NAME = "routeName";
+  private static final String KEY_ROUTE_ID = "route_id";
+  private static final String KEY_ROUTE_NAME = "route_name";
+  private static final String KEY_ROUTE_DISTANCE = "total_distance";
 
   // Markers Table Columns
-  private static final String KEY_MARKER_ID = "id";
-  private static final String KEY_MARKER_MAP_ID = "routeid";
+  private static final String KEY_MARKER_ID = "marker_id";
   private static final String KEY_MARKER_ORDER = "sequenceposition";
   private static final String KEY_MARKER_LAT = "latitude";
   private static final String KEY_MARKER_LONG = "longitude";
+
+  // Marker Table Route Foreign Key
+  private static final String FK_MARKER_MAP_ID = "route_fk";
 
   public RouteDatabaseHelper(Context context) {
     super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -50,8 +53,9 @@ public class RouteDatabaseHelper extends SQLiteOpenHelper {
     String CREATE_ROUTES_TABLE = "CREATE TABLE " + TABLE_ROUTES +
         "(" +
         KEY_ROUTE_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " + // Primary key
-        KEY_ROUTE_NAME + " TEXT" + // Route name
-        ")";
+        KEY_ROUTE_NAME + " TEXT, " + // Route name
+        KEY_ROUTE_DISTANCE + " DOUBLE DEFAULT 0.00" +
+        ");";
 
     String CREATE_MARKERS_TABLE = "CREATE TABLE " + TABLE_MARKERS +
         "(" +
@@ -59,9 +63,10 @@ public class RouteDatabaseHelper extends SQLiteOpenHelper {
         KEY_MARKER_ORDER + " INTEGER, " +
         KEY_MARKER_LAT + " DECIMAL(9,6), " +
         KEY_MARKER_LONG + " DECIMAL(9,6), " +
-        KEY_MARKER_MAP_ID + " INTEGER, " +
-        "FOREIGN KEY(" + KEY_MARKER_MAP_ID + ") REFERENCES " + TABLE_ROUTES + "(" + KEY_ROUTE_ID + ")" +
-        ")";
+        FK_MARKER_MAP_ID + " Integer, " +
+          "FOREIGN KEY "  + "(" + FK_MARKER_MAP_ID + ") " +
+          "REFERENCES " + TABLE_ROUTES + "(" + KEY_ROUTE_ID + ") " +
+        ");";
 
     db.execSQL(CREATE_ROUTES_TABLE);
     db.execSQL(CREATE_MARKERS_TABLE);
@@ -74,8 +79,9 @@ public class RouteDatabaseHelper extends SQLiteOpenHelper {
   public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
     if (oldVersion != newVersion) {
       // Simplest implementation is to drop all old tables and recreate them
-      db.execSQL("DROP TABLE IF EXISTS " + TABLE_ROUTES);
       db.execSQL("DROP TABLE IF EXISTS " + TABLE_MARKERS);
+      db.execSQL("DROP TABLE IF EXISTS " + TABLE_ROUTES);
+
       onCreate(db);
     }
   }
@@ -99,9 +105,16 @@ public class RouteDatabaseHelper extends SQLiteOpenHelper {
     }
   }
 
-  public Cursor getData(){
+  public Cursor getRoutes(){
     SQLiteDatabase db = this.getWritableDatabase();
     String query = "SELECT * FROM " + TABLE_ROUTES;
+    Cursor data = db.rawQuery(query, null);
+    return data;
+  }
+
+  public Cursor getMarkers(int mapId){
+    SQLiteDatabase db = this.getWritableDatabase();
+    String query = "SELECT * FROM " + TABLE_MARKERS + " WHERE " + FK_MARKER_MAP_ID + " = " + mapId + " ORDER BY " + KEY_MARKER_ORDER + " ASC";
     Cursor data = db.rawQuery(query, null);
     return data;
   }
@@ -110,5 +123,37 @@ public class RouteDatabaseHelper extends SQLiteOpenHelper {
     SQLiteDatabase db = this.getWritableDatabase();
     db.delete(TABLE_ROUTES, null, null);
 
+    // Cascade should take care of this
+    //db.delete(TABLE_MARKERS, null, null);
+  }
+
+  public void deleteRoute(int id){
+    SQLiteDatabase db = this.getWritableDatabase();
+    db.delete(TABLE_ROUTES, "" + KEY_ROUTE_ID + "=" + id, null);
+  }
+
+  public void clearMarkers(int id){
+    SQLiteDatabase db = this.getWritableDatabase();
+    String query = "DELETE FROM " + TABLE_MARKERS + " WHERE " + KEY_MARKER_ID + " = " + id;
+    db.rawQuery(query, null);
+    db.close();
+  }
+
+  public boolean saveMarker(int order, double lat, double lng, int mapId) {
+    SQLiteDatabase db = getWritableDatabase();
+    ContentValues contentValues = new ContentValues();
+    contentValues.put(KEY_MARKER_ORDER, order);
+    contentValues.put(KEY_MARKER_LAT, lat);
+    contentValues.put(KEY_MARKER_LONG, lng);
+    contentValues.put(FK_MARKER_MAP_ID, mapId);
+
+    long result = db.insert(TABLE_MARKERS, null, contentValues);
+    db.close();
+
+    if (result == -1){
+      return false;
+    }
+
+    return true;
   }
 }

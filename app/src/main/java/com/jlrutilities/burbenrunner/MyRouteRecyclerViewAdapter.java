@@ -1,13 +1,12 @@
 package com.jlrutilities.burbenrunner;
 
-import androidx.recyclerview.widget.RecyclerView;
-
-import android.content.Context;
-import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
+
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.jlrutilities.burbenrunner.RouteFragment.OnListFragmentInteractionListener;
 
@@ -20,19 +19,27 @@ public class MyRouteRecyclerViewAdapter extends RecyclerView.Adapter<MyRouteRecy
 
   private final List<String> routesValues;
   private final List<Integer> routesDBIds;
+  private final List<Double> routesDistances;
 
-
-  public MyRouteRecyclerViewAdapter(List<String> list, List<Integer> idList, OnListFragmentInteractionListener listener){
+  public MyRouteRecyclerViewAdapter(List<String> list, List<Integer> idList, List<Double> distanceList, OnListFragmentInteractionListener listener){
     routesValues = list;
     routesDBIds = idList;
+    routesDistances = distanceList;
     mListener = listener;
   }
 
   // inflate the overall view, pass to single viewholder object
-  @Override
+  /*@Override
   public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
     View view = LayoutInflater.from(parent.getContext())
         .inflate(R.layout.fragment_route, parent, false);
+    return new ViewHolder(view);
+  }*/
+
+  @Override
+  public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    View view = LayoutInflater.from(parent.getContext())
+        .inflate(R.layout.fragment_route_list_item, parent, false);
     return new ViewHolder(view);
   }
 
@@ -42,9 +49,11 @@ public class MyRouteRecyclerViewAdapter extends RecyclerView.Adapter<MyRouteRecy
     holder.myString =  routesValues.get(position);
     holder.myDbId = routesDBIds.get(position);
 
-    holder.mIdView.setText("" + position);
-    holder.mContentView.setText(routesValues.get(position));
-    holder.mContentIdView.setText("" + routesDBIds.get(position));
+    holder.mIdView.setText("Pos: " + position);
+    holder.mContentView.setText("Name: " + routesValues.get(position));
+    //holder.mDistanceView.setText("" + routesDBIds.get(position));
+    holder.mDistanceView.setText("Distance: " + routesDistances.get(position));
+    holder.mImageView.setBackgroundResource(R.drawable.baseline_my_location_black_24);
 
     holder.mView.setOnClickListener(new View.OnClickListener() {
       @Override
@@ -52,10 +61,23 @@ public class MyRouteRecyclerViewAdapter extends RecyclerView.Adapter<MyRouteRecy
         if (null != mListener) {
           // Notify the active callbacks interface (the activity, if the
           // fragment is attached to one) that an item has been selected.
-          mListener.onListFragmentInteraction(position, holder.myDbId, holder.myString);
+          mListener.onClickListFragmentInteraction(position, holder.myDbId, holder.myString);
         }
       }
     });
+
+
+    holder.mView.setOnLongClickListener(new View.OnLongClickListener() {
+      @Override
+      public boolean onLongClick(View view){
+        if (null != mListener){
+          mListener.onLongClickListFragmentInteraction(position, holder.myDbId);
+          //return true;
+        }
+        return false;
+      }
+    });
+
   }
 
   // values size
@@ -70,7 +92,8 @@ public class MyRouteRecyclerViewAdapter extends RecyclerView.Adapter<MyRouteRecy
     public final View mView;
     public final TextView mIdView;
     public final TextView mContentView;
-    public final TextView mContentIdView;
+    public final TextView mDistanceView;
+    public final ImageView mImageView;
 
     public String myString;
     public Integer myDbId;
@@ -81,7 +104,8 @@ public class MyRouteRecyclerViewAdapter extends RecyclerView.Adapter<MyRouteRecy
       mView = view;
       mIdView = (TextView) view.findViewById(R.id.item_number);
       mContentView = (TextView) view.findViewById(R.id.content);
-      mContentIdView = (TextView) view.findViewById(R.id.content_id);
+      mDistanceView = (TextView) view.findViewById(R.id.distanceDesc);
+      mImageView = (ImageView) view.findViewById(R.id.imageListIcon);
     }
 
     @Override
