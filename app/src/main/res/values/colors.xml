@@ -8,4 +8,5 @@
     <color name="colorPrimaryBackground">#b2d3f7</color>
     <color name="colorFabBackground">#00ffff</color>
     <color name="colorWhiteBackground">#FFFFFF</color>
+    <color name="colorGreenMarker">#27f58b</color>
 </resources>

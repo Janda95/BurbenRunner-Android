@@ -1,16 +1,13 @@
 package com.jlrutilities.burbenrunner;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.location.Location;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
-import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -28,6 +25,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.UiSettings;
+import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
@@ -129,8 +127,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     // FAB
     FloatingActionButton fabMyLocation = findViewById(R.id.fab_my_location);
-    FloatingActionButton fabAdd = findViewById(R.id.fab_add);
+    FloatingActionButton fabSave = findViewById(R.id.fab_add);
     FloatingActionButton fabClear = findViewById(R.id.fab_clear_all);
+    FloatingActionButton fabUndo = findViewById(R.id.fab_undo);
+    FloatingActionButton fabBack = findViewById(R.id.fab_back);
+    FloatingActionButton fabMapType = findViewById(R.id.fab_map_type);
 
     fabMyLocation.setOnClickListener(new View.OnClickListener() {
       @Override
@@ -155,7 +156,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
       }
     });
 
-    fabAdd.setOnClickListener(new View.OnClickListener() {
+    fabSave.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View view) {
         // green plus
@@ -178,6 +179,27 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
       public void onClick(View view) {
         // red x
         removeEverything();
+      }
+    });
+
+    fabUndo.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View v) {
+
+      }
+    });
+
+    fabBack.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View v) {
+
+      }
+    });
+
+    fabMapType.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View v) {
+
       }
     });
 
@@ -300,11 +322,23 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     LatLng latLng = new LatLng(lat, lng);
 
     //Mark does not persist on screen rotation!!!! need to do sharedpreferences or DB to store in between
-    MarkerOptions options = new MarkerOptions()
-        .position(latLng)
-        .draggable(true)
-        .icon(BitmapDescriptorFactory.defaultMarker());
-    //.icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_map_marker));
+    MarkerOptions options;
+    // First one is green, Every other is blue
+    if (markers.size() == 0){
+      options = new MarkerOptions()
+          .position(latLng)
+          .draggable(true)
+          //.icon(BitmapDescriptorFactory.defaultMarker());
+          .icon(BitmapDescriptorFactory.fromResource(R.drawable.custom_green_marker_24))
+          .anchor(0.5F,0.5F);
+    } else {
+      options = new MarkerOptions()
+          .position(latLng)
+          .draggable(true)
+          //.icon(BitmapDescriptorFactory.defaultMarker());
+          .icon(BitmapDescriptorFactory.fromResource(R.drawable.custom_blue_marker_24))
+          .anchor(0.5F,0.5F);
+    }
 
     markers.add(mMap.addMarker(options));
     if (markers.size() > 1){
@@ -382,7 +416,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
       PolylineOptions options = new PolylineOptions()
           .add(markers.get(i-1).getPosition())
           .add(markers.get(i).getPosition())
-          .color(Color.BLUE)
+          .color(Color.RED)
           .width(20);
 
       polylines.add(mMap.addPolyline(options));
