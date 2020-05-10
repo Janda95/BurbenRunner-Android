@@ -1,11 +1,19 @@
 package com.jlrutilities.burbenrunner;
 
+import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.location.Location;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -45,6 +53,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
   private List<Marker> markers = new ArrayList<>();
 
   TextView tvInfo;
+  EditText mapNameEtv;
+  LinearLayout linearLayout;
   private int index = 0;
   private boolean isMetric;
   private double distance;
@@ -81,7 +91,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
       // already established map
       listPosition = intent.getIntExtra("list_position", -1);
       mapId = intent.getIntExtra("map_id", -1);
-      mapName =intent.getStringExtra("map_name");
+      mapName = intent.getStringExtra("map_name");
     }
 
     // default settings
@@ -98,6 +108,24 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     // TextView
     tvInfo = findViewById(R.id.info_text_view);
     setInfoBox(0.00);
+
+    mapNameEtv = findViewById(R.id.map_name_edit_text_view);
+    mapNameEtv.clearFocus();
+
+    // Enter key press
+    mapNameEtv.setOnKeyListener(new View.OnKeyListener() {
+      public boolean onKey(View view, int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_ENTER || keyCode == KeyEvent.ACTION_DOWN) {
+          InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+          imm.hideSoftInputFromWindow(getWindow().getDecorView().getRootView().getWindowToken(), 0);
+          mapNameEtv.clearFocus();
+          return true;
+        } else {
+          return false;
+        }
+      }
+    });
+
 
     // FAB
     FloatingActionButton fabMyLocation = findViewById(R.id.fab_my_location);
@@ -302,10 +330,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
   private void setInfoBox(double dist){
     if (isMetric) {
       double metersToKm = dist * 0.001;
-      tvInfo.setText(String.format(" \nDistance: \n %.2f mi", metersToKm));
+      tvInfo.setText(String.format( "Distance: %.2f mi", metersToKm));
     } else {
       double metersToMiles = dist * 0.00062137;
-      tvInfo.setText(String.format( mapName +"\n Distance: \n %.2f mi ", metersToMiles));
+      tvInfo.setText(String.format( "Distance: %.2f mi", metersToMiles));
     }
   }
 
@@ -322,7 +350,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
     polylines.clear();
 
-    tvInfo.setText(" Distance: \n 0.00 ");
+    setInfoBox(0.00);
   }
 
   private void removePolyLines(){

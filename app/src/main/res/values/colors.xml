@@ -5,6 +5,7 @@
     <color name="colorAccent">#530999</color>
     <color name="colorDefaultText">#000000</color>
     <color name="colorSecondaryText">#454041</color>
+    <color name="colorPrimaryBackground">#b2d3f7</color>
     <color name="colorFabBackground">#00ffff</color>
     <color name="colorWhiteBackground">#FFFFFF</color>
 </resources>

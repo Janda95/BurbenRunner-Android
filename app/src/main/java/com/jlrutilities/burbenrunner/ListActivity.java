@@ -9,11 +9,13 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.DialogFragment;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class ListActivity extends AppCompatActivity implements CreateRouteDialogFragment.CreateRouteDialogListener {
 
@@ -97,8 +99,8 @@ public class ListActivity extends AppCompatActivity implements CreateRouteDialog
   }
 
   public void displayListHelpDialog(MenuItem item){
-    /*mDatabaseHelper.clearTables();
-    populateListData();*/
+    ListHelpDialogFragment dialogFragment = ListHelpDialogFragment.newInstance();
+    dialogFragment.show(getSupportFragmentManager(), "LIST_DIALOG_FRAGMENT");
   }
 
   private void populateListData(){

@@ -6,12 +6,13 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 
 public class ListHelpDialogFragment extends DialogFragment {
-  private String content;
+  private TextView contentTv;
 
   public ListHelpDialogFragment(){}
 
@@ -33,24 +34,18 @@ public class ListHelpDialogFragment extends DialogFragment {
     AlertDialog alertDialog = new AlertDialog.Builder(getActivity()).create();
     alertDialog.setView(content);
 
+    contentTv = (TextView) content.findViewById(R.id.list_help_content);
+    contentTv.setText("Single Click to Open Map\nLong Click to Delete\nMenu + Button to Create New Route");
 
     // setup button interactions
-    alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "Delete",
+    alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "OK",
         new DialogInterface.OnClickListener() {
           @Override
           public void onClick(DialogInterface dialog, int which) {
-            // Delete from database
-
+            dialog.dismiss();
           }
         });
 
-    alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "Cancel",
-        new DialogInterface.OnClickListener() {
-          @Override
-          public void onClick(DialogInterface dialog, int which) {
-
-          }
-        });
 
     return alertDialog;
   }
