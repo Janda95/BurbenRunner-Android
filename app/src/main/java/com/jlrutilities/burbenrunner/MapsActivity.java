@@ -34,7 +34,6 @@ import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
-import java.lang.reflect.Array;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
@@ -78,6 +77,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     // Database
     mDatabaseHelper = new RouteDatabaseHelper(this);
 
+    mapNameEtv = findViewById(R.id.map_name_edit_text_view);
+
     //Intent Map Information
     final Intent intent = getIntent();
     isNewMap = intent.getBooleanExtra("isNewMap", true);
@@ -91,6 +92,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
       listPosition = intent.getIntExtra("list_position", -1);
       mapId = intent.getIntExtra("map_id", -1);
       mapName = intent.getStringExtra("map_name");
+      mapNameEtv.setText(mapName);
     }
 
     // default settings
@@ -108,7 +110,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     tvInfo = findViewById(R.id.info_text_view);
     setInfoBox(0.00);
 
-    mapNameEtv = findViewById(R.id.map_name_edit_text_view);
+
     mapNameEtv.clearFocus();
 
     // Enter key press
