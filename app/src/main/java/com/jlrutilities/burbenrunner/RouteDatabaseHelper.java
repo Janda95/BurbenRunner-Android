@@ -6,6 +6,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
+import android.view.ContextThemeWrapper;
 
 public class RouteDatabaseHelper extends SQLiteOpenHelper {
 
@@ -86,7 +87,7 @@ public class RouteDatabaseHelper extends SQLiteOpenHelper {
     }
   }
   // Example setting value in db
-  public boolean addNewTable(String item) {
+  public long addNewRoute(String item) {
     SQLiteDatabase db = this.getWritableDatabase();
     ContentValues contentValues = new ContentValues();
     contentValues.put(KEY_ROUTE_NAME, item);
@@ -98,11 +99,7 @@ public class RouteDatabaseHelper extends SQLiteOpenHelper {
     long result = db.insert(TABLE_ROUTES, null, contentValues);
 
     // if inserted incorrectly it will return -1
-    if (result == -1){
-      return false;
-    } else {
-      return true;
-    }
+    return result;
   }
 
   public Cursor getRoutes(){
@@ -155,5 +152,12 @@ public class RouteDatabaseHelper extends SQLiteOpenHelper {
     }
 
     return true;
+  }
+
+  public void changeRouteName(String routeName, int mapId) {
+    SQLiteDatabase db = getWritableDatabase();
+    ContentValues contentValues = new ContentValues();
+    contentValues.put(KEY_ROUTE_NAME, routeName);
+    db.update(TABLE_ROUTES, contentValues, KEY_ROUTE_ID + " = " + mapId, null);
   }
 }

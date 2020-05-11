@@ -9,13 +9,11 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.DialogFragment;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class ListActivity extends AppCompatActivity implements CreateRouteDialogFragment.CreateRouteDialogListener {
 
@@ -79,17 +77,6 @@ public class ListActivity extends AppCompatActivity implements CreateRouteDialog
     return true;
   }
 
-  public void addNewRoute(String newEntry){
-
-    boolean insertData = mDatabaseHelper.addNewTable(newEntry);
-    if (insertData) {
-      toastMessage("Data Inserted Successfully!");
-    } else {
-      toastMessage("Something went wrong");
-    }
-    populateListData();
-  }
-
   public void newRoute(MenuItem item){
     //CreateRouteDialogFragment dialogFragment = CreateRouteDialogFragment.newInstance();
     //dialogFragment.show(getSupportFragmentManager(), "DIALOG_FRAGMENT");
@@ -134,7 +121,7 @@ public class ListActivity extends AppCompatActivity implements CreateRouteDialog
   @Override
   public void onDialogPositiveClick(DialogFragment dialog, String mapName) {
     dialog.dismiss();
-    addNewRoute(mapName);
+    //addNewRoute(mapName);
   }
 
   @Override

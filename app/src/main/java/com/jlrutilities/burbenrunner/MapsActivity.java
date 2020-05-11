@@ -25,7 +25,6 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.UiSettings;
-import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
@@ -35,6 +34,7 @@ import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import java.lang.reflect.Array;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
@@ -47,8 +47,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
   private FusedLocationProviderClient fusedLocationClient;
   private LocationCallback locationCallback;
 
-  private List<Polyline> polylines= new ArrayList<>();
-  private List<Marker> markers = new ArrayList<>();
+  private List<Polyline> polylines;
+  private List<Marker> markers;
+  private List<Marker> originalMarkers;
 
   TextView tvInfo;
   EditText mapNameEtv;
@@ -127,11 +128,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     // FAB
     FloatingActionButton fabMyLocation = findViewById(R.id.fab_my_location);
-    FloatingActionButton fabSave = findViewById(R.id.fab_add);
+    FloatingActionButton fabSave = findViewById(R.id.fab_save);
     FloatingActionButton fabClear = findViewById(R.id.fab_clear_all);
     FloatingActionButton fabUndo = findViewById(R.id.fab_undo);
     FloatingActionButton fabBack = findViewById(R.id.fab_back);
     FloatingActionButton fabMapType = findViewById(R.id.fab_map_type);
+    FloatingActionButton fabMapHelp = findViewById(R.id.fab_map_help);
 
     fabMyLocation.setOnClickListener(new View.OnClickListener() {
       @Override
@@ -149,7 +151,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                   CameraUpdate update = CameraUpdateFactory.newLatLngZoom(latLng, 15);
                   mMap.animateCamera(update);
                 } else {
-                  Toast.makeText(MapsActivity.this, "Could not Connect!", Toast.LENGTH_SHORT).show();
+                  toastMessage("Could not connect!");
                 }
               }
             });
@@ -159,25 +161,39 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     fabSave.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View view) {
-        // green plus
-        //save to DB
-        mDatabaseHelper.clearMarkers(mapId);
-
-        for( int i = 0; i < markers.size(); i++){
-          Marker marker = markers.get(i);
-          LatLng position = marker.getPosition();
-          mDatabaseHelper.saveMarker(i, position.latitude, position.longitude, mapId);
+        String routeName = mapNameEtv.getText().toString();
+        if(isNewMap){
+          mapId = (int) mDatabaseHelper.addNewRoute(routeName);
+        } else {
+          if (mapName != routeName){
+            mDatabaseHelper.changeRouteName(routeName, mapId);
+          }
         }
 
-        Intent intent = new Intent(getApplicationContext(), ListActivity.class);
-        startActivity(intent);
+        // check if error occurred in database
+        if(mapId != -1){
+          // Save marker info to db as map
+          mDatabaseHelper.clearMarkers(mapId);
+
+          for( int i = 0; i < markers.size(); i++){
+            Marker marker = markers.get(i);
+            LatLng position = marker.getPosition();
+            mDatabaseHelper.saveMarker(i, position.latitude, position.longitude, mapId);
+          }
+
+          Intent intent = new Intent(getApplicationContext(), ListActivity.class);
+          startActivity(intent);
+
+        } else {
+          toastMessage("Error saving to database!");
+        }
       }
     });
 
     fabClear.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View view) {
-        // red x
+        // Clear all markers
         removeEverything();
       }
     });
@@ -185,7 +201,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     fabUndo.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
-
+        if(historyStack.size() != 0){
+          // implement undo stack switch
+        }
       }
     });
 
@@ -193,6 +211,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
       @Override
       public void onClick(View v) {
 
+        /* if marker ArrayList do not match marker clone made in OnCreate ask user if they would
+         like to save
+        */
+        if (originalMarkers.equals(markers)){
+          Intent intent = new Intent(getApplicationContext(), ListActivity.class);
+          startActivity(intent);
+        } else {
+          RequestSaveDialogFragment dialogFragment = RequestSaveDialogFragment.newInstance();
+          dialogFragment.show(getSupportFragmentManager(), "Map_Do_Not_Save_Confirm_Fragment");
+          // Implement Listeners
+        }
       }
     });
 
@@ -203,6 +232,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
       }
     });
 
+
+    fabMapHelp.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        MapHelpDialogFragment helpDialog = MapHelpDialogFragment.newInstance();
+        helpDialog.show(getSupportFragmentManager(), "Map_Help_Dialog_Fragment");
+      }
+    });
   }
 
 
@@ -220,6 +257,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     mMap = googleMap;
 
     mUiSettings = mMap.getUiSettings();
+
+    markers = new ArrayList<>();
+    polylines = new ArrayList<>();
 
     // Keep the UI settings state in sync with the checkboxes
     /*mUiSettings.setCompassEnabled(true);
@@ -301,6 +341,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
       }
     });
 
+
     // get route data
     if(isNewMap == false) {
       Cursor cursor = mDatabaseHelper.getMarkers(mapId);
@@ -314,6 +355,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
       }
     }
+
+    // Set Original Markers
+    originalMarkers = new ArrayList<>(markers);
+
   }
 
   //private void addMarker(Address address, double lat, double lng){
@@ -421,5 +466,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
       polylines.add(mMap.addPolyline(options));
     }
+  }
+
+
+  private void toastMessage(String message){
+    Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
   }
 }

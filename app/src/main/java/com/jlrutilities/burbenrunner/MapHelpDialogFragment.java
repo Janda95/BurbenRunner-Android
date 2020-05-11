@@ -12,7 +12,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 
 public class MapHelpDialogFragment extends DialogFragment {
-  private String content;
+  private String stringContent;
 
   public MapHelpDialogFragment(){}
 
@@ -34,8 +34,9 @@ public class MapHelpDialogFragment extends DialogFragment {
     AlertDialog alertDialog = new AlertDialog.Builder(getActivity()).create();
     alertDialog.setView(content);
 
+    stringContent = "";
     TextView contentTv = content.findViewById(R.id.map_help_content);
-    contentTv.setText("This is for information for instructions of map stuff. Pretty cool HUH");
+    contentTv.setText(stringContent);
 
     // setup button interactions
     alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "OK",
