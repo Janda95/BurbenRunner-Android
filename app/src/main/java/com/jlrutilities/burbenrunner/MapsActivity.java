@@ -1,7 +1,10 @@
 package com.jlrutilities.burbenrunner;
 
+import android.Manifest;
+import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.location.Location;
@@ -14,6 +17,9 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
+import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentActivity;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -22,6 +28,7 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.UiSettings;
@@ -39,9 +46,14 @@ import java.util.ArrayList;
 import java.util.Deque;
 import java.util.List;
 
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
+public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, RequestSaveDialogFragment.RequestSaveDialogListener{
+
+  private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
+  private boolean mPermissionDenied = false;
 
   private GoogleMap mMap;
+  private MapFragment mapFragment;
+
   private UiSettings mUiSettings;
   private FusedLocationProviderClient fusedLocationClient;
   private LocationCallback locationCallback;
@@ -101,9 +113,19 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
 
     // Obtain the SupportMapFragment and get notified when the map is ready to be used.
-    SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-        .findFragmentById(R.id.map);
+    //SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+    //    .findFragmentById(R.id.map);
+    //mapFragment.getMapAsync(this);
+
+    MapFragment mapFragment = MapFragment.newInstance();
+    FragmentTransaction fragmentTransaction =
+        getFragmentManager().beginTransaction();
+    fragmentTransaction.add(R.id.map, mapFragment);
+    fragmentTransaction.commit();
+
     mapFragment.getMapAsync(this);
+
+
     fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
     // TextView
@@ -140,6 +162,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     fabMyLocation.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View view) {
+        if(mPermissionDenied == false) {
+          enableMyLocation();
+        }
+
+        //get last location
         fusedLocationClient.getLastLocation()
             .addOnSuccessListener(MapsActivity.this, new OnSuccessListener<Location>() {
               @Override
@@ -174,14 +201,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         // check if error occurred in database
         if(mapId != -1){
-          // Save marker info to db as map
-          mDatabaseHelper.clearMarkers(mapId);
-
-          for( int i = 0; i < markers.size(); i++){
-            Marker marker = markers.get(i);
-            LatLng position = marker.getPosition();
-            mDatabaseHelper.saveMarker(i, position.latitude, position.longitude, mapId);
-          }
+          saveMapMarkers();
 
           Intent intent = new Intent(getApplicationContext(), ListActivity.class);
           startActivity(intent);
@@ -196,6 +216,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
       @Override
       public void onClick(View view) {
         // Clear all markers
+        MarkerHistoryItem clearHistoryItem = new MarkerHistoryItem();
+        //historyStack.add(clearHistoryItem);
         removeEverything();
       }
     });
@@ -242,6 +264,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         helpDialog.show(getSupportFragmentManager(), "Map_Help_Dialog_Fragment");
       }
     });
+  }
+
+  private void saveMapMarkers() {
+    // Save marker info to db as map
+    mDatabaseHelper.clearMarkers(mapId);
+
+    for( int i = 0; i < markers.size(); i++){
+      Marker marker = markers.get(i);
+      LatLng position = marker.getPosition();
+      mDatabaseHelper.saveMarker(i, position.latitude, position.longitude, mapId);
+    }
   }
 
 
@@ -361,6 +394,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     // Set Original Markers
     originalMarkers = new ArrayList<>(markers);
 
+    // ask for location permission
+    enableMyLocation();
+
   }
 
   //private void addMarker(Address address, double lat, double lng){
@@ -474,4 +510,81 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
   private void toastMessage(String message){
     Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
   }
+
+  @Override
+  public void onRequestDialogPositiveClick(DialogFragment dialog) {
+    dialog.dismiss();
+
+    String routeName = mapNameEtv.getText().toString();
+    if(isNewMap){
+      mapId = (int) mDatabaseHelper.addNewRoute(routeName);
+    } else {
+      if (mapName != routeName){
+        mDatabaseHelper.changeRouteName(routeName, mapId);
+      }
+    }
+
+    saveMapMarkers();
+
+    Intent intent = new Intent(getApplicationContext(), ListActivity.class);
+    startActivity(intent);
+  }
+
+  @Override
+  public void onRequestDialogNegativeClick(DialogFragment dialog) {
+    dialog.dismiss();
+
+    Intent intent = new Intent(getApplicationContext(), ListActivity.class);
+    startActivity(intent);
+  }
+
+  private void enableMyLocation() {
+
+    if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+        == PackageManager.PERMISSION_GRANTED) {
+      if (mMap != null) {
+        mMap.setMyLocationEnabled(true);
+      }
+    } else {
+      // Permission to access the location is missing. Show rationale and request permission
+      PermissionUtils.requestPermission(this, LOCATION_PERMISSION_REQUEST_CODE,
+          Manifest.permission.ACCESS_FINE_LOCATION, true);
+    }
+  }
+
+  // [START maps_check_location_permission_result]
+  @Override
+  public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+
+    if (requestCode != LOCATION_PERMISSION_REQUEST_CODE) {
+      return;
+    }
+
+    if (PermissionUtils.isPermissionGranted(permissions, grantResults, Manifest.permission.ACCESS_FINE_LOCATION)) {
+      // Enable the my location layer if the permission has been granted.
+      enableMyLocation();
+    } else {
+      // Permission was denied. Display an error message
+      mPermissionDenied = true;
+    }
+  }
+
+  @Override
+  protected void onResumeFragments() {
+    super.onResumeFragments();
+    if (mPermissionDenied) {
+      // Permission was not granted, display error dialog.
+      showMissingPermissionError();
+      mPermissionDenied = false;
+    }
+  }
+
+  /**
+   * Displays a dialog with error message explaining that the location permission is missing.
+   */
+  private void showMissingPermissionError() {
+    PermissionUtils.PermissionDeniedDialog
+        .newInstance(true).show(getSupportFragmentManager(), "dialog");
+  }
+
 }

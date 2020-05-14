@@ -12,7 +12,6 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 
 public class DeletionConfirmDialogFragment extends DialogFragment {
-  private String content;
 
   public DeletionConfirmDialogFragment(){}
 

@@ -15,7 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 
-public class ListActivity extends AppCompatActivity implements CreateRouteDialogFragment.CreateRouteDialogListener {
+public class ListActivity extends AppCompatActivity {
 
   private final String TAG = "ListActivity";
 
@@ -116,17 +116,5 @@ public class ListActivity extends AppCompatActivity implements CreateRouteDialog
 
   private void toastMessage(String message){
     Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
-  }
-
-  @Override
-  public void onDialogPositiveClick(DialogFragment dialog, String mapName) {
-    dialog.dismiss();
-    //addNewRoute(mapName);
-  }
-
-  @Override
-  public void onDialogNegativeClick(DialogFragment dialog) {
-    // close dialog
-    dialog.dismiss();
   }
 }

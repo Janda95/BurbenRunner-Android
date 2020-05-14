@@ -2,6 +2,7 @@ package com.jlrutilities.burbenrunner;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -12,7 +13,13 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 
 public class RequestSaveDialogFragment extends DialogFragment {
-  private String content;
+
+  RequestSaveDialogListener listener;
+
+  public interface RequestSaveDialogListener{
+    void onRequestDialogPositiveClick(DialogFragment dialog);
+    void onRequestDialogNegativeClick(DialogFragment dialog);
+  }
 
   public RequestSaveDialogFragment(){}
 
@@ -22,6 +29,21 @@ public class RequestSaveDialogFragment extends DialogFragment {
     RequestSaveDialogFragment fragment = new RequestSaveDialogFragment();
     fragment.setArguments(args);
     return fragment;
+  }
+
+  @Override
+  public void onAttach(Context context){
+    super.onAttach(context);
+
+    //Verify that the host activity implements the callback interface
+    try {
+      // Instantiate the DialogListener so we can send events to the host
+      listener = (RequestSaveDialogListener) context;
+    } catch (ClassCastException e) {
+      // The activity doesn't implement the interface, throw exception
+      throw new ClassCastException(getActivity().toString()
+          + " must implement RequestSaveDialogListener");
+    }
   }
 
   @Override
@@ -43,7 +65,7 @@ public class RequestSaveDialogFragment extends DialogFragment {
         new DialogInterface.OnClickListener() {
           @Override
           public void onClick(DialogInterface dialog, int which) {
-
+            listener.onRequestDialogPositiveClick(RequestSaveDialogFragment.this);
           }
         });
 
@@ -51,7 +73,7 @@ public class RequestSaveDialogFragment extends DialogFragment {
         new DialogInterface.OnClickListener() {
           @Override
           public void onClick(DialogInterface dialog, int which) {
-
+            listener.onRequestDialogNegativeClick(RequestSaveDialogFragment.this);
           }
         });
 
@@ -59,7 +81,7 @@ public class RequestSaveDialogFragment extends DialogFragment {
         new DialogInterface.OnClickListener() {
           @Override
           public void onClick(DialogInterface dialog, int which) {
-
+            dialog.dismiss();
           }
         });
 
