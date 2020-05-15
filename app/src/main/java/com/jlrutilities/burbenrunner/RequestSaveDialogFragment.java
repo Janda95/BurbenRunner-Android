@@ -16,12 +16,15 @@ public class RequestSaveDialogFragment extends DialogFragment {
 
   RequestSaveDialogListener listener;
 
+
   public interface RequestSaveDialogListener{
     void onRequestDialogPositiveClick(DialogFragment dialog);
     void onRequestDialogNegativeClick(DialogFragment dialog);
   }
 
+
   public RequestSaveDialogFragment(){}
+
 
   public static RequestSaveDialogFragment newInstance(){
     Bundle args = new Bundle();
@@ -30,6 +33,7 @@ public class RequestSaveDialogFragment extends DialogFragment {
     fragment.setArguments(args);
     return fragment;
   }
+
 
   @Override
   public void onAttach(Context context){
@@ -46,6 +50,7 @@ public class RequestSaveDialogFragment extends DialogFragment {
     }
   }
 
+
   @Override
   public Dialog onCreateDialog(@Nullable Bundle savedInstanceState){
 
@@ -59,8 +64,7 @@ public class RequestSaveDialogFragment extends DialogFragment {
     AlertDialog alertDialog = new AlertDialog.Builder(getActivity()).create();
     alertDialog.setView(content);
 
-
-    // setup button interactions
+    // Setup button interactions
     alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "Save",
         new DialogInterface.OnClickListener() {
           @Override
@@ -87,5 +91,4 @@ public class RequestSaveDialogFragment extends DialogFragment {
 
     return alertDialog;
   }
-
 }

@@ -56,7 +56,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
   private UiSettings mUiSettings;
   private FusedLocationProviderClient fusedLocationClient;
-  private LocationCallback locationCallback;
 
   private List<Polyline> polylines;
   private List<Marker> markers;
@@ -64,7 +63,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
   TextView tvInfo;
   EditText mapNameEtv;
-  LinearLayout linearLayout;
   private int index = 0;
   private boolean isMetric;
   private double distance;
@@ -78,6 +76,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
   // Database
   RouteDatabaseHelper mDatabaseHelper;
 
+  // Marker History
   Deque<MarkerHistoryItem> historyStack;
 
 
@@ -91,16 +90,18 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     mapNameEtv = findViewById(R.id.map_name_edit_text_view);
 
-    //Intent Map Information
+    // Intent Map Information
     final Intent intent = getIntent();
     isNewMap = intent.getBooleanExtra("isNewMap", true);
+
     if (isNewMap){
-      // new map! Need to create in DB on Save
+      // New map! Need to create in DB on Save
       listPosition = -1;
       mapId = -1;
       mapName = "";
+
     } else {
-      // already established map
+      // Already established map
       listPosition = intent.getIntExtra("list_position", -1);
       mapId = intent.getIntExtra("map_id", -1);
       mapName = intent.getStringExtra("map_name");
@@ -110,7 +111,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     // default settings
     isMetric = false;
     historyStack = new ArrayDeque<>();
-
 
     // Obtain the SupportMapFragment and get notified when the map is ready to be used.
     //SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
@@ -125,13 +125,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     mapFragment.getMapAsync(this);
 
-
     fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
     // TextView
     tvInfo = findViewById(R.id.info_text_view);
     setInfoBox(0.00);
-
 
     mapNameEtv.clearFocus();
 
@@ -149,7 +147,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
       }
     });
 
-
     // FAB
     FloatingActionButton fabMyLocation = findViewById(R.id.fab_my_location);
     FloatingActionButton fabSave = findViewById(R.id.fab_save);
@@ -162,11 +159,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     fabMyLocation.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View view) {
+        // Check Permissions
         if(mPermissionDenied == false) {
           enableMyLocation();
         }
 
-        //get last location
+        // Get Last Location
         fusedLocationClient.getLastLocation()
             .addOnSuccessListener(MapsActivity.this, new OnSuccessListener<Location>() {
               @Override
@@ -177,10 +175,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                       currentLocation.getLatitude(),
                       currentLocation.getLongitude()
                   );
+
                   CameraUpdate update = CameraUpdateFactory.newLatLngZoom(latLng, 15);
                   mMap.animateCamera(update);
+
                 } else {
                   toastMessage("Could not connect!");
+
                 }
               }
             });
@@ -193,6 +194,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         String routeName = mapNameEtv.getText().toString();
         if(isNewMap){
           mapId = (int) mDatabaseHelper.addNewRoute(routeName);
+
         } else {
           if (mapName != routeName){
             mDatabaseHelper.changeRouteName(routeName, mapId);
@@ -256,7 +258,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
       }
     });
 
-
     fabMapHelp.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
@@ -265,6 +266,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
       }
     });
   }
+
 
   private void saveMapMarkers() {
     // Save marker info to db as map
@@ -278,15 +280,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
   }
 
 
-  /**
-   * Manipulates the map once available.
-   * This callback is triggered when the map is ready to be used.
-   * This is where we can add markers or lines, add listeners or move the camera. In this case,
-   * we just add a marker near Sydney, Australia.
-   * If Google Play services is not installed on the device, the user will be prompted to install
-   * it inside the SupportMapFragment. This method will only be triggered once the user has
-   * installed Google Play services and returned to the app.
-   */
   @Override
   public void onMapReady(GoogleMap googleMap) {
     mMap = googleMap;
@@ -295,12 +288,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     markers = new ArrayList<>();
     polylines = new ArrayList<>();
-
-    // Keep the UI settings state in sync with the checkboxes
-    /*mUiSettings.setCompassEnabled(true);
-    mUiSettings.setMyLocationButtonEnabled(true);
-    mUiSettings.setMapToolbarEnabled(true);
-    mMap.setMyLocationEnabled(true);*/
 
     // Add a marker in Sydney and move the camera
     LatLng sydney = new LatLng(-34, 151);
@@ -315,22 +302,18 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
       @Override
       public View getInfoContents(Marker marker) {
         View view = getLayoutInflater().inflate(R.layout.info_window, null);
-        //TextView tvLocality = view.findViewById(R.id.tvLocality);
         TextView tvLat = view.findViewById(R.id.tvLat);
         TextView tvLng = view.findViewById(R.id.tvLng);
-        //TextView tvSnippet = view.findViewById(R.id.tvSnippet);
 
         LatLng latLng = marker.getPosition();
-        //tvLocality.setText(marker.getTitle());
         tvLat.setText("Latitude: " + latLng.latitude);
         tvLng.setText("Longitude: " + latLng.longitude);
-        //tvSnippet.setText(marker.getSnippet());
 
         return view;
       }
     });
 
-    //Long click listener
+    // Marker Interaction Listeners
     mMap.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
       @Override
       public void onMapLongClick(LatLng latLng) {
@@ -338,7 +321,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
       }
     });
 
-    // marker click listener
     mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
       @Override
       public boolean onMarkerClick(Marker marker) {
@@ -346,11 +328,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             marker.getPosition().latitude + ", "+
             marker.getPosition().longitude+ ")";
         Toast.makeText(MapsActivity.this, msg, Toast.LENGTH_SHORT).show();
+
         return false;
       }
     });
 
-    //on drag listener
     mMap.setOnMarkerDragListener(new GoogleMap.OnMarkerDragListener() {
       @Override
       public void onMarkerDragStart(Marker marker) {
@@ -359,15 +341,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
       }
 
       @Override
-      public void onMarkerDrag(Marker marker) {
-      }
+      public void onMarkerDrag(Marker marker) {}
 
       @Override
       public void onMarkerDragEnd(Marker marker) {
-        // remove marker with initial values and replace with new marker with new values
+        // Replace old marker with new marker
         markers.remove(index);
         markers.add(index, marker);
-
 
         if(markers.size() > 1){
           calculateDistance();
@@ -376,59 +356,53 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
       }
     });
 
-
     // get route data
     if(isNewMap == false) {
       Cursor cursor = mDatabaseHelper.getMarkers(mapId);
       if (cursor != null) {
         while (cursor.moveToNext()) {
           addMarker(cursor.getDouble(2), cursor.getDouble(3));
-        /*
-        listIntegerData.add(Integer.valueOf(data.getString(0)));
-        listStringData.add(data.getString(1));
-         */
         }
       }
     }
 
-    // Set Original Markers
+    // Copy of original markers
     originalMarkers = new ArrayList<>(markers);
 
-    // ask for location permission
+    // Check for Location permission
     enableMyLocation();
-
   }
 
-  //private void addMarker(Address address, double lat, double lng){
+
   private void addMarker(double lat, double lng){
 
     LatLng latLng = new LatLng(lat, lng);
-
-    //Mark does not persist on screen rotation!!!! need to do sharedpreferences or DB to store in between
     MarkerOptions options;
-    // First one is green, Every other is blue
+
+    // First marker is green, then blue for sequential items
     if (markers.size() == 0){
       options = new MarkerOptions()
           .position(latLng)
           .draggable(true)
-          //.icon(BitmapDescriptorFactory.defaultMarker());
           .icon(BitmapDescriptorFactory.fromResource(R.drawable.custom_green_marker_24))
           .anchor(0.5F,0.5F);
+
     } else {
       options = new MarkerOptions()
           .position(latLng)
           .draggable(true)
-          //.icon(BitmapDescriptorFactory.defaultMarker());
           .icon(BitmapDescriptorFactory.fromResource(R.drawable.custom_blue_marker_24))
           .anchor(0.5F,0.5F);
     }
 
     markers.add(mMap.addMarker(options));
+
     if (markers.size() > 1){
       drawMultipleLines();
       calculateDistance();
     }
   }
+
 
   private void calculateDistance() {
     float[] result = new float[1];
@@ -444,19 +418,22 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     setInfoBox(finalResult);
   }
 
+
   private void setInfoBox(double dist){
     if (isMetric) {
       double metersToKm = dist * 0.001;
       tvInfo.setText(String.format( "Distance: %.2f mi", metersToKm));
+
     } else {
       double metersToMiles = dist * 0.00062137;
       tvInfo.setText(String.format( "Distance: %.2f mi", metersToMiles));
     }
+
   }
 
-  private void removeEverything() {
 
-    // polygon or multiple lines
+  private void removeEverything() {
+    // Multiple Lines
     for(Marker marker : markers){
       marker.remove();
     }
@@ -470,6 +447,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     setInfoBox(0.00);
   }
 
+
   private void removePolyLines(){
     for(Polyline polyline : polylines){
       polyline.remove();
@@ -477,8 +455,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     polylines.clear();
   }
 
-  private void drawMultipleLines(){
 
+  private void drawMultipleLines(){
     int size = markers.size();
     Marker markerStart = markers.get(size-2);
     Marker markerEnd = markers.get(size-1);
@@ -491,6 +469,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     polylines.add(mMap.addPolyline(options));
   }
+
 
   private void updateMultipleLines(){
     removePolyLines();
@@ -511,6 +490,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
   }
 
+
   @Override
   public void onRequestDialogPositiveClick(DialogFragment dialog) {
     dialog.dismiss();
@@ -530,6 +510,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     startActivity(intent);
   }
 
+
   @Override
   public void onRequestDialogNegativeClick(DialogFragment dialog) {
     dialog.dismiss();
@@ -537,6 +518,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     Intent intent = new Intent(getApplicationContext(), ListActivity.class);
     startActivity(intent);
   }
+
 
   private void enableMyLocation() {
 
@@ -552,7 +534,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
   }
 
-  // [START maps_check_location_permission_result]
+
   @Override
   public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
 
@@ -569,6 +551,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
   }
 
+
   @Override
   protected void onResumeFragments() {
     super.onResumeFragments();
@@ -579,9 +562,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
   }
 
-  /**
-   * Displays a dialog with error message explaining that the location permission is missing.
-   */
+
+  // Displays a dialog with error message explaining that the location permission is missing.
   private void showMissingPermissionError() {
     PermissionUtils.PermissionDeniedDialog
         .newInstance(true).show(getSupportFragmentManager(), "dialog");

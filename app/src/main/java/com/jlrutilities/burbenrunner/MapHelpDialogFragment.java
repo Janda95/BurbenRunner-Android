@@ -14,7 +14,9 @@ import androidx.fragment.app.DialogFragment;
 public class MapHelpDialogFragment extends DialogFragment {
   private String stringContent;
 
+
   public MapHelpDialogFragment(){}
+
 
   public static MapHelpDialogFragment newInstance(){
     Bundle args = new Bundle();
@@ -23,6 +25,7 @@ public class MapHelpDialogFragment extends DialogFragment {
     fragment.setArguments(args);
     return fragment;
   }
+
 
   @Override
   public Dialog onCreateDialog(@Nullable Bundle savedInstanceState){
@@ -49,5 +52,4 @@ public class MapHelpDialogFragment extends DialogFragment {
 
     return alertDialog;
   }
-
 }

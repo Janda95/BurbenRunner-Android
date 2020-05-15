@@ -26,6 +26,7 @@ public class MarkerHistoryItem {
 
   MarkerHistoryItem(){}
 
+
   MarkerHistoryItem(int type, double lat, double lng, int position, List<Marker> markerList){
     setType(type);
     this.lat = lat;
@@ -33,6 +34,7 @@ public class MarkerHistoryItem {
     this.position = position;
     this.markerSnapshot = markerList;
   }
+
 
   public void setType(int typeNum) {
 
@@ -54,17 +56,21 @@ public class MarkerHistoryItem {
     this.type = type;
   }
 
+
   public String getType(){
     return type;
   }
+
 
   public double getLat(){
     return lat;
   }
 
+
   public double getLng(){
     return lng;
   }
+
 
   public int getPosition(){
     return position;

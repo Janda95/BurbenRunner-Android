@@ -6,7 +6,6 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
-import android.view.ContextThemeWrapper;
 
 public class RouteDatabaseHelper extends SQLiteOpenHelper {
 
@@ -35,9 +34,11 @@ public class RouteDatabaseHelper extends SQLiteOpenHelper {
   // Marker Table Route Foreign Key
   private static final String FK_MARKER_MAP_ID = "route_fk";
 
+
   public RouteDatabaseHelper(Context context) {
     super(context, DATABASE_NAME, null, DATABASE_VERSION);
   }
+
 
   // Called when the database connection is being configured.
   // Configure database settings for things like foreign key support, write-ahead logging, etc.
@@ -46,6 +47,7 @@ public class RouteDatabaseHelper extends SQLiteOpenHelper {
     super.onConfigure(db);
     db.setForeignKeyConstraintsEnabled(true);
   }
+
 
   // Called when the database is created for the FIRST time.
   // If a database already exists on disk with the same DATABASE_NAME, this method will NOT be called.
@@ -73,6 +75,7 @@ public class RouteDatabaseHelper extends SQLiteOpenHelper {
     db.execSQL(CREATE_MARKERS_TABLE);
   }
 
+
   // Called when the database needs to be upgraded.
   // This method will only be called if a database already exists on disk with the same DATABASE_NAME,
   // but the DATABASE_VERSION is different than the version of the database that exists on disk.
@@ -86,6 +89,8 @@ public class RouteDatabaseHelper extends SQLiteOpenHelper {
       onCreate(db);
     }
   }
+
+
   // Example setting value in db
   public long addNewRoute(String item) {
     SQLiteDatabase db = this.getWritableDatabase();
@@ -102,6 +107,7 @@ public class RouteDatabaseHelper extends SQLiteOpenHelper {
     return result;
   }
 
+
   public Cursor getRoutes(){
     SQLiteDatabase db = this.getWritableDatabase();
     String query = "SELECT * FROM " + TABLE_ROUTES;
@@ -109,12 +115,14 @@ public class RouteDatabaseHelper extends SQLiteOpenHelper {
     return data;
   }
 
+
   public Cursor getMarkers(int mapId){
     SQLiteDatabase db = this.getWritableDatabase();
     String query = "SELECT * FROM " + TABLE_MARKERS + " WHERE " + FK_MARKER_MAP_ID + " = " + mapId + " ORDER BY " + KEY_MARKER_ORDER + " ASC";
     Cursor data = db.rawQuery(query, null);
     return data;
   }
+
 
   public void clearTables() {
     SQLiteDatabase db = this.getWritableDatabase();
@@ -124,10 +132,12 @@ public class RouteDatabaseHelper extends SQLiteOpenHelper {
     //db.delete(TABLE_MARKERS, null, null);
   }
 
+
   public void deleteRoute(int id){
     SQLiteDatabase db = this.getWritableDatabase();
     db.delete(TABLE_ROUTES, "" + KEY_ROUTE_ID + "=" + id, null);
   }
+
 
   public void clearMarkers(int id){
     SQLiteDatabase db = this.getWritableDatabase();
@@ -135,6 +145,7 @@ public class RouteDatabaseHelper extends SQLiteOpenHelper {
     db.rawQuery(query, null);
     db.close();
   }
+
 
   public boolean saveMarker(int order, double lat, double lng, int mapId) {
     SQLiteDatabase db = getWritableDatabase();
@@ -153,6 +164,7 @@ public class RouteDatabaseHelper extends SQLiteOpenHelper {
 
     return true;
   }
+
 
   public void changeRouteName(String routeName, int mapId) {
     SQLiteDatabase db = getWritableDatabase();

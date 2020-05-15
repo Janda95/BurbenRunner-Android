@@ -10,7 +10,6 @@ import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.DialogFragment;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
@@ -30,6 +29,7 @@ public class ListActivity extends AppCompatActivity {
 
   // Database
   RouteDatabaseHelper mDatabaseHelper;
+
 
   @Override
   protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -60,35 +60,33 @@ public class ListActivity extends AppCompatActivity {
       }
 
       @Override
-      public void onLongClickListFragmentInteraction(int position, int id) {
-        // Ask user if they want to delete the route then delete or leave alone
-
-      }
+      public void onLongClickListFragmentInteraction(int position, int id) {}
     };
 
-    // listener then populate
+    // Listener then populate list
     populateListData();
   }
 
+
   @Override
   public boolean onCreateOptionsMenu(Menu menu) {
-    // Inflate the menu; this adds items to the action bar if it is present.
     getMenuInflater().inflate(R.menu.list_options, menu);
     return true;
   }
 
+
   public void newRoute(MenuItem item){
-    //CreateRouteDialogFragment dialogFragment = CreateRouteDialogFragment.newInstance();
-    //dialogFragment.show(getSupportFragmentManager(), "DIALOG_FRAGMENT");
     Intent intent = new Intent(getApplicationContext(), MapsActivity.class);
     intent.putExtra("isNewMap", true);
     startActivity(intent);
   }
 
+
   public void displayListHelpDialog(MenuItem item){
     ListHelpDialogFragment dialogFragment = ListHelpDialogFragment.newInstance();
     dialogFragment.show(getSupportFragmentManager(), "LIST_DIALOG_FRAGMENT");
   }
+
 
   private void populateListData(){
     Log.d(TAG, "populateListView: Displaying data in the ListView.");
@@ -109,10 +107,11 @@ public class ListActivity extends AppCompatActivity {
       }
     }
 
-    //adapt!!!!
+    // Create new adapter
     adapter = new MyRouteRecyclerViewAdapter(listStringData, listIntegerData, listDoubleData, listener);
     recyclerView.setAdapter(adapter);
   }
+
 
   private void toastMessage(String message){
     Toast.makeText(this, message, Toast.LENGTH_SHORT).show();

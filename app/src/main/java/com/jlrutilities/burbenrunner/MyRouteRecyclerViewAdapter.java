@@ -21,6 +21,7 @@ public class MyRouteRecyclerViewAdapter extends RecyclerView.Adapter<MyRouteRecy
   private final List<Integer> routesDBIds;
   private final List<Double> routesDistances;
 
+
   public MyRouteRecyclerViewAdapter(List<String> list, List<Integer> idList, List<Double> distanceList, OnListFragmentInteractionListener listener){
     routesValues = list;
     routesDBIds = idList;
@@ -28,13 +29,6 @@ public class MyRouteRecyclerViewAdapter extends RecyclerView.Adapter<MyRouteRecy
     mListener = listener;
   }
 
-  // inflate the overall view, pass to single viewholder object
-  /*@Override
-  public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-    View view = LayoutInflater.from(parent.getContext())
-        .inflate(R.layout.fragment_route, parent, false);
-    return new ViewHolder(view);
-  }*/
 
   @Override
   public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -43,7 +37,8 @@ public class MyRouteRecyclerViewAdapter extends RecyclerView.Adapter<MyRouteRecy
     return new ViewHolder(view);
   }
 
-  // holder set items based on values
+
+  // Set View Holder
   @Override
   public void onBindViewHolder(final ViewHolder holder, final int position) {
     holder.myString =  routesValues.get(position);
@@ -51,7 +46,6 @@ public class MyRouteRecyclerViewAdapter extends RecyclerView.Adapter<MyRouteRecy
 
     holder.mIdView.setText("Pos: " + position);
     holder.mContentView.setText("Name: " + routesValues.get(position));
-    //holder.mDistanceView.setText("" + routesDBIds.get(position));
     holder.mDistanceView.setText("Distance: " + routesDistances.get(position));
     holder.mImageView.setBackgroundResource(R.drawable.baseline_my_location_black_24);
 
@@ -66,7 +60,6 @@ public class MyRouteRecyclerViewAdapter extends RecyclerView.Adapter<MyRouteRecy
       }
     });
 
-
     holder.mView.setOnLongClickListener(new View.OnLongClickListener() {
       @Override
       public boolean onLongClick(View view){
@@ -77,16 +70,16 @@ public class MyRouteRecyclerViewAdapter extends RecyclerView.Adapter<MyRouteRecy
         return false;
       }
     });
-
   }
 
-  // values size
+
   @Override
   public int getItemCount() {
     return routesValues.size();
   }
 
-  // needed to inflate single view
+
+  // Holder builder for above setting views
   public class ViewHolder extends RecyclerView.ViewHolder {
 
     public final View mView;
@@ -98,15 +91,16 @@ public class MyRouteRecyclerViewAdapter extends RecyclerView.Adapter<MyRouteRecy
     public String myString;
     public Integer myDbId;
 
-    // set local items and set single row view
+
     public ViewHolder(View view) {
       super(view);
       mView = view;
-      mIdView = (TextView) view.findViewById(R.id.item_number);
-      mContentView = (TextView) view.findViewById(R.id.content);
-      mDistanceView = (TextView) view.findViewById(R.id.distanceDesc);
-      mImageView = (ImageView) view.findViewById(R.id.imageListIcon);
+      mIdView = view.findViewById(R.id.item_number);
+      mContentView = view.findViewById(R.id.content);
+      mDistanceView = view.findViewById(R.id.distanceDesc);
+      mImageView = view.findViewById(R.id.imageListIcon);
     }
+
 
     @Override
     public String toString() {

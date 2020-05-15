@@ -14,7 +14,9 @@ import androidx.fragment.app.DialogFragment;
 public class ListHelpDialogFragment extends DialogFragment {
   private TextView contentTv;
 
+
   public ListHelpDialogFragment(){}
+
 
   public static ListHelpDialogFragment newInstance(){
     Bundle args = new Bundle();
@@ -23,6 +25,7 @@ public class ListHelpDialogFragment extends DialogFragment {
     fragment.setArguments(args);
     return fragment;
   }
+
 
   @Override
   public Dialog onCreateDialog(@Nullable Bundle savedInstanceState){
@@ -46,8 +49,6 @@ public class ListHelpDialogFragment extends DialogFragment {
           }
         });
 
-
     return alertDialog;
   }
-
 }

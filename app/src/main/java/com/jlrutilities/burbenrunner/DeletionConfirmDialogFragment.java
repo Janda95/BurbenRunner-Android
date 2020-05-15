@@ -15,6 +15,7 @@ public class DeletionConfirmDialogFragment extends DialogFragment {
 
   public DeletionConfirmDialogFragment(){}
 
+
   public static DeletionConfirmDialogFragment newInstance(){
     Bundle args = new Bundle();
 
@@ -22,6 +23,7 @@ public class DeletionConfirmDialogFragment extends DialogFragment {
     fragment.setArguments(args);
     return fragment;
   }
+
 
   @Override
   public Dialog onCreateDialog(@Nullable Bundle savedInstanceState){
@@ -35,7 +37,6 @@ public class DeletionConfirmDialogFragment extends DialogFragment {
     // Custom Dialog fragment for persistence
     AlertDialog alertDialog = new AlertDialog.Builder(getActivity()).create();
     alertDialog.setView(content);
-
 
     // setup button interactions
     alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "Delete",
@@ -56,5 +57,4 @@ public class DeletionConfirmDialogFragment extends DialogFragment {
 
     return alertDialog;
   }
-
 }
