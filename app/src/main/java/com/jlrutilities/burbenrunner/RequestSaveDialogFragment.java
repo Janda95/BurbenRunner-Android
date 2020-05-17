@@ -39,7 +39,7 @@ public class RequestSaveDialogFragment extends DialogFragment {
   public void onAttach(Context context){
     super.onAttach(context);
 
-    //Verify that the host activity implements the callback interface
+    // ;Verify that the host activity implements the callback interface
     try {
       // Instantiate the DialogListener so we can send events to the host
       listener = (RequestSaveDialogListener) context;

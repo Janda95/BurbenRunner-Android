@@ -13,7 +13,6 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -23,14 +22,12 @@ import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentActivity;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
@@ -91,10 +88,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     mapNameEtv = findViewById(R.id.map_name_edit_text_view);
 
     // Intent Map Information
-    final Intent intent = getIntent();
+    Intent intent = getIntent();
     isNewMap = intent.getBooleanExtra("isNewMap", true);
 
-    if (isNewMap){
+    if (isNewMap == true){
       // New map! Need to create in DB on Save
       listPosition = -1;
       mapId = -1;
@@ -110,7 +107,25 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     // default settings
     isMetric = false;
+    distance = 0.00;
     historyStack = new ArrayDeque<>();
+
+    markers = new ArrayList<>();
+    polylines = new ArrayList<>();
+
+    // get route data
+    if(isNewMap == false) {
+      Cursor cursor = mDatabaseHelper.getMarkers(mapId);
+      if (cursor != null) {
+        while (cursor.moveToNext()) {
+          addMarker(cursor.getDouble(2), cursor.getDouble(3));
+        }
+      }
+    }
+
+
+    // Copy of original markers
+    originalMarkers = new ArrayList<>(markers);
 
     // Obtain the SupportMapFragment and get notified when the map is ready to be used.
     //SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
@@ -191,26 +206,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     fabSave.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View view) {
-        String routeName = mapNameEtv.getText().toString();
-        if(isNewMap){
-          mapId = (int) mDatabaseHelper.addNewRoute(routeName);
+        saveMapMarkers();
 
-        } else {
-          if (mapName != routeName){
-            mDatabaseHelper.changeRouteName(routeName, mapId);
-          }
-        }
-
-        // check if error occurred in database
-        if(mapId != -1){
-          saveMapMarkers();
-
-          Intent intent = new Intent(getApplicationContext(), ListActivity.class);
-          startActivity(intent);
-
-        } else {
-          toastMessage("Error saving to database!");
-        }
+        Intent intent = new Intent(getApplicationContext(), ListActivity.class);
+        startActivity(intent);
       }
     });
 
@@ -218,8 +217,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
       @Override
       public void onClick(View view) {
         // Clear all markers
-        MarkerHistoryItem clearHistoryItem = new MarkerHistoryItem();
-        //historyStack.add(clearHistoryItem);
+        //MarkerHistoryItem item = new MarkerHistoryItem(3,  markers);
+        //historyStack.add(item);
         removeEverything();
       }
     });
@@ -227,9 +226,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     fabUndo.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
-        if(historyStack.size() != 0){
-          // implement undo stack switch
-        }
+
+       // MarkerHistoryItem historyItem = historyStack.pop();
+       // toastMessage(historyItem.getMarker().getPosition().toString());
+        //if (historyItem != null) {
+        //  handleHistoryItem(historyItem);
+        //}
+
       }
     });
 
@@ -268,26 +271,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
   }
 
 
-  private void saveMapMarkers() {
-    // Save marker info to db as map
-    mDatabaseHelper.clearMarkers(mapId);
-
-    for( int i = 0; i < markers.size(); i++){
-      Marker marker = markers.get(i);
-      LatLng position = marker.getPosition();
-      mDatabaseHelper.saveMarker(i, position.latitude, position.longitude, mapId);
-    }
-  }
-
-
   @Override
   public void onMapReady(GoogleMap googleMap) {
     mMap = googleMap;
 
     mUiSettings = mMap.getUiSettings();
-
-    markers = new ArrayList<>();
-    polylines = new ArrayList<>();
 
     // Add a marker in Sydney and move the camera
     LatLng sydney = new LatLng(-34, 151);
@@ -317,7 +305,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     mMap.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
       @Override
       public void onMapLongClick(LatLng latLng) {
-        MapsActivity.this.addMarker(latLng.latitude, latLng.longitude);
+        addMarker(latLng.latitude, latLng.longitude);
       }
     });
 
@@ -346,6 +334,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
       @Override
       public void onMarkerDragEnd(Marker marker) {
         // Replace old marker with new marker
+
+        //MarkerHistoryItem item = new MarkerHistoryItem(2, marker, markers.indexOf(marker));
+        //historyStack.add(item);
+
         markers.remove(index);
         markers.add(index, marker);
 
@@ -355,19 +347,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
       }
     });
-
-    // get route data
-    if(isNewMap == false) {
-      Cursor cursor = mDatabaseHelper.getMarkers(mapId);
-      if (cursor != null) {
-        while (cursor.moveToNext()) {
-          addMarker(cursor.getDouble(2), cursor.getDouble(3));
-        }
-      }
-    }
-
-    // Copy of original markers
-    originalMarkers = new ArrayList<>(markers);
 
     // Check for Location permission
     enableMyLocation();
@@ -397,9 +376,70 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     markers.add(mMap.addMarker(options));
 
+    //MarkerHistoryItem item = new MarkerHistoryItem(1, markers.get(markers.size()-1), markers.size() -1);
+    //historyStack.add(item);
+
     if (markers.size() > 1){
       drawMultipleLines();
       calculateDistance();
+    }
+  }
+
+
+  private void handleHistoryItem(MarkerHistoryItem historyItem) {
+    switch(historyItem.getTypeString()){
+      case "NewMarker":
+        //int position = historyItem.getPosition();
+        Marker newMarker = historyItem.getMarker();
+        //markers.remove(position);
+        markers.remove(newMarker);
+        if(markers.size() > 1){
+          calculateDistance();
+          updateMultipleLines();
+        }
+        break;
+      case "MoveMarker":
+        int position = historyItem.getPosition();
+        Marker mMarker = historyItem.getMarker();
+        markers.set(position, mMarker);
+        if(markers.size() > 1){
+          calculateDistance();
+          updateMultipleLines();
+        }
+        break;
+      case"Clear":
+        List<Marker> list = historyItem.getMarkerList();
+        markers.clear();
+        for (int i = 0; i < list.size(); i++){
+          markers.add(list.get(i));
+        }
+        if(markers.size() > 1){
+          calculateDistance();
+          updateMultipleLines();
+        }
+        break;
+    }
+  }
+
+
+  private void saveMapMarkers() {
+    String routeName = mapNameEtv.getText().toString();
+    if(isNewMap == true){
+      mapId = mDatabaseHelper.addNewRoute(routeName);
+      isNewMap = false;
+    } else {
+      if (mapName != routeName) {
+        mDatabaseHelper.changeRouteName(routeName, mapId);
+      }
+    }
+
+    // Save marker info to db as map
+    mDatabaseHelper.clearMarkers(mapId);
+
+    for( int i = 0; i < markers.size(); i++){
+      Marker marker = markers.get(i);
+      LatLng position = marker.getPosition();
+      mDatabaseHelper.saveMarker(i, position.latitude, position.longitude, mapId);
     }
   }
 
@@ -415,6 +455,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
       finalResult += result[0];
     }
 
+    distance = finalResult;
     setInfoBox(finalResult);
   }
 
@@ -437,14 +478,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     for(Marker marker : markers){
       marker.remove();
     }
-    markers.clear();
+    //markers.clear();
+    markers = new ArrayList<>();
 
     for(Polyline polyline : polylines){
       polyline.remove();
     }
-    polylines.clear();
+    // polylines.clear();
+    polylines = new ArrayList<>();
 
-    setInfoBox(0.00);
+    calculateDistance();
   }
 
 
@@ -453,6 +496,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
       polyline.remove();
     }
     polylines.clear();
+    polylines = new ArrayList<>();
   }
 
 
@@ -494,15 +538,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
   @Override
   public void onRequestDialogPositiveClick(DialogFragment dialog) {
     dialog.dismiss();
-
-    String routeName = mapNameEtv.getText().toString();
-    if(isNewMap){
-      mapId = (int) mDatabaseHelper.addNewRoute(routeName);
-    } else {
-      if (mapName != routeName){
-        mDatabaseHelper.changeRouteName(routeName, mapId);
-      }
-    }
 
     saveMapMarkers();
 

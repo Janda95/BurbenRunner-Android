@@ -9,6 +9,8 @@ import android.util.Log;
 
 public class RouteDatabaseHelper extends SQLiteOpenHelper {
 
+  SQLiteDatabase database;
+
   // TAG
   private static final String TAG = "DatabaseHelper";
 
@@ -91,17 +93,26 @@ public class RouteDatabaseHelper extends SQLiteOpenHelper {
   }
 
 
+  private SQLiteDatabase openWritableDatabase(){
+    if(database == null) {
+      database = this.getWritableDatabase();
+    }
+    return database;
+  }
+
   // Example setting value in db
-  public long addNewRoute(String item) {
-    SQLiteDatabase db = this.getWritableDatabase();
+  public int addNewRoute(String item) {
+    SQLiteDatabase db  = openWritableDatabase();
+
     ContentValues contentValues = new ContentValues();
     contentValues.put(KEY_ROUTE_NAME, item);
+    contentValues.put(KEY_ROUTE_DISTANCE, 0.00);
 
     // Log it
     Log.d(TAG, "addData: Adding " + item + " to " + TABLE_ROUTES);
 
     // Attempt to add it to DB and check
-    long result = db.insert(TABLE_ROUTES, null, contentValues);
+    int result = (int) db.insert(TABLE_ROUTES, null, contentValues);
 
     // if inserted incorrectly it will return -1
     return result;
@@ -109,7 +120,7 @@ public class RouteDatabaseHelper extends SQLiteOpenHelper {
 
 
   public Cursor getRoutes(){
-    SQLiteDatabase db = this.getWritableDatabase();
+    SQLiteDatabase db  = openWritableDatabase();
     String query = "SELECT * FROM " + TABLE_ROUTES;
     Cursor data = db.rawQuery(query, null);
     return data;
@@ -117,59 +128,60 @@ public class RouteDatabaseHelper extends SQLiteOpenHelper {
 
 
   public Cursor getMarkers(int mapId){
-    SQLiteDatabase db = this.getWritableDatabase();
+    SQLiteDatabase db  = openWritableDatabase();
     String query = "SELECT * FROM " + TABLE_MARKERS + " WHERE " + FK_MARKER_MAP_ID + " = " + mapId + " ORDER BY " + KEY_MARKER_ORDER + " ASC";
     Cursor data = db.rawQuery(query, null);
     return data;
   }
 
 
-  public void clearTables() {
-    SQLiteDatabase db = this.getWritableDatabase();
-    db.delete(TABLE_ROUTES, null, null);
+  public int deleteRoute(int id){
 
-    // Cascade should take care of this
-    //db.delete(TABLE_MARKERS, null, null);
+    SQLiteDatabase db  = openWritableDatabase();
+    //String query = "DELETE FROM " + TABLE_MARKERS + " WHERE " + KEY_MARKER_ID + " = " + id;
+    //db.rawQuery(query, null);
+
+    //String query2 = "DELETE FROM " + TABLE_ROUTES + " WHERE " + KEY_ROUTE_ID + " = " + id;
+
+    int markerRowsAffected = db.delete(TABLE_MARKERS, FK_MARKER_MAP_ID + "=" + id, null);
+    int routeRowsAffected = db.delete(TABLE_ROUTES, KEY_ROUTE_ID + "=" + id, null);
+
+    //db.delete(TABLE_ROUTES, "" + KEY_ROUTE_ID + "=" + id, null);
+    return 0;
   }
 
 
-  public void deleteRoute(int id){
-    SQLiteDatabase db = this.getWritableDatabase();
-    db.delete(TABLE_ROUTES, "" + KEY_ROUTE_ID + "=" + id, null);
+  public int clearMarkers(int id){
+    SQLiteDatabase db  = openWritableDatabase();
+    int rowsAffected = db.delete(TABLE_ROUTES, KEY_ROUTE_ID + "=" + id, null);
+    return rowsAffected;
   }
 
 
-  public void clearMarkers(int id){
-    SQLiteDatabase db = this.getWritableDatabase();
-    String query = "DELETE FROM " + TABLE_MARKERS + " WHERE " + KEY_MARKER_ID + " = " + id;
-    db.rawQuery(query, null);
-    db.close();
-  }
-
-
-  public boolean saveMarker(int order, double lat, double lng, int mapId) {
-    SQLiteDatabase db = getWritableDatabase();
+  public long saveMarker(int order, double lat, double lng, int mapId) {
+    SQLiteDatabase db  = openWritableDatabase();
     ContentValues contentValues = new ContentValues();
     contentValues.put(KEY_MARKER_ORDER, order);
     contentValues.put(KEY_MARKER_LAT, lat);
     contentValues.put(KEY_MARKER_LONG, lng);
     contentValues.put(FK_MARKER_MAP_ID, mapId);
 
-    long result = db.insert(TABLE_MARKERS, null, contentValues);
-    db.close();
-
-    if (result == -1){
-      return false;
-    }
-
-    return true;
+    long rowId = db.insert(TABLE_MARKERS, null, contentValues);
+    return rowId;
   }
 
 
-  public void changeRouteName(String routeName, int mapId) {
-    SQLiteDatabase db = getWritableDatabase();
+  public int changeRouteName(String routeName, int mapId) {
+    SQLiteDatabase db  = openWritableDatabase();
     ContentValues contentValues = new ContentValues();
     contentValues.put(KEY_ROUTE_NAME, routeName);
-    db.update(TABLE_ROUTES, contentValues, KEY_ROUTE_ID + " = " + mapId, null);
+    int rowsAffected = db.update(TABLE_ROUTES, contentValues, KEY_ROUTE_ID + "=" + mapId, null);
+    return rowsAffected;
+  }
+
+
+  public boolean isOpen(){
+    SQLiteDatabase db = openWritableDatabase();
+    return db.isOpen();
   }
 }

@@ -10,11 +10,12 @@ import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.DialogFragment;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 
-public class ListActivity extends AppCompatActivity {
+public class ListActivity extends AppCompatActivity implements DeletionConfirmDialogFragment.DeletionConfirmDialogListener {
 
   private final String TAG = "ListActivity";
 
@@ -60,7 +61,10 @@ public class ListActivity extends AppCompatActivity {
       }
 
       @Override
-      public void onLongClickListFragmentInteraction(int position, int id) {}
+      public void onLongClickListFragmentInteraction(int position, int id) {
+        DeletionConfirmDialogFragment dialogFragment = DeletionConfirmDialogFragment.newInstance(listIntegerData.get(position));
+        dialogFragment.show(getSupportFragmentManager(), "delete_route_dialog_fragment");
+      }
     };
 
     // Listener then populate list
@@ -115,5 +119,12 @@ public class ListActivity extends AppCompatActivity {
 
   private void toastMessage(String message){
     Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+  }
+
+  @Override
+  public void onDeletionConfirmPositiveClick(DialogFragment dialog, int mapId) {
+    mDatabaseHelper.deleteRoute(mapId);
+    populateListData();
+    toastMessage("Deleted Route");
   }
 }

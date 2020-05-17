@@ -6,10 +6,10 @@ import java.util.List;
 
 public class MarkerHistoryItem {
 
-  private String type;
-  private double lat;
-  private double lng;
+  private String typeString;
+  private int typeInt;
   private int position;
+  private Marker marker;
   private List<Marker> markerSnapshot;
 
   /*
@@ -21,59 +21,62 @@ public class MarkerHistoryItem {
   *  Exceptions:
   *   Clear will delete Stack and Markers
   *
-  *  Create factory object? with general type in the history stack
+  *  Create factory object? with general typeString in the history stack
   * */
 
   MarkerHistoryItem(){}
 
-
-  MarkerHistoryItem(int type, double lat, double lng, int position, List<Marker> markerList){
-    setType(type);
-    this.lat = lat;
-    this.lng = lng;
-    this.position = position;
+  // Clear Markers
+  MarkerHistoryItem(int type, List<Marker> markerList){
+    setTypeString(type);
+    this.position = -1;
+    this.marker = null;
     this.markerSnapshot = markerList;
   }
 
+  // New Marker
+  MarkerHistoryItem(int type, Marker marker, int position){
+    setTypeString(type);
+    this.position = position;
+    this.markerSnapshot = null;
+    this.marker = marker;
+  }
 
-  public void setType(int typeNum) {
+
+  public void setTypeString(int typeNum) {
 
     switch (typeNum) {
       case 1:
-        type = "NewMarker";
+        typeString = "NewMarker";
         break;
       case 2:
-        type = "MoveMarker";
+        typeString = "MoveMarker";
         break;
       case 3:
-        type = "Clear";
+        typeString = "Clear";
         break;
       default:
         break;
 
     }
-
-    this.type = type;
+    this.typeInt = typeNum;
+    this.typeString = typeString;
   }
 
 
-  public String getType(){
-    return type;
+  public String getTypeString(){
+    return typeString;
   }
-
-
-  public double getLat(){
-    return lat;
-  }
-
-
-  public double getLng(){
-    return lng;
-  }
-
 
   public int getPosition(){
     return position;
   }
 
+  public List<Marker> getMarkerList() {
+    return markerSnapshot;
+  }
+
+  public Marker getMarker() {
+    return marker;
+  }
 }
