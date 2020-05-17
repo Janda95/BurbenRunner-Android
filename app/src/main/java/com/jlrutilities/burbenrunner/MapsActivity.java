@@ -425,7 +425,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
   private void saveMapMarkers() {
     String routeName = mapNameEtv.getText().toString();
     if(isNewMap == true){
-      mapId = mDatabaseHelper.addNewRoute(routeName);
+      mapId = (int) mDatabaseHelper.addNewRoute(routeName);
       isNewMap = false;
     } else {
       if (mapName != routeName) {
