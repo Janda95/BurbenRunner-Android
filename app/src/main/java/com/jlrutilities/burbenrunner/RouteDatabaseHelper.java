@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.os.strictmode.SqliteObjectLeakedViolation;
 
 public class RouteDatabaseHelper extends SQLiteOpenHelper {
 
@@ -95,7 +96,6 @@ public class RouteDatabaseHelper extends SQLiteOpenHelper {
     db.execSQL("DELETE FROM " + TABLE_MARKERS + " WHERE 1=1");
     db.execSQL("DELETE FROM " + TABLE_ROUTES + " WHERE 1=1");
 
-    //db.close();
   }
 
 
@@ -110,8 +110,6 @@ public class RouteDatabaseHelper extends SQLiteOpenHelper {
     // Attempt to add it to DB and check
     long result =  db.insert(TABLE_ROUTES, null, contentValues);
 
-    //db.close();
-
     return result;
   }
 
@@ -120,8 +118,6 @@ public class RouteDatabaseHelper extends SQLiteOpenHelper {
     SQLiteDatabase db  = this.getReadableDatabase();
     String query = "SELECT * FROM " + TABLE_ROUTES;
     Cursor data = db.rawQuery(query, null);
-
-    //db.close();
 
     return data;
   }
@@ -133,18 +129,26 @@ public class RouteDatabaseHelper extends SQLiteOpenHelper {
     String[] args = {mapName};
     Cursor data = db.rawQuery(query, args);
 
-    // NOTE: USE ARGS FOR VALUES!!!
-
     return data;
+  }
+
+
+  public Cursor getRouteWithId(int mapId) {
+    SQLiteDatabase db = this.getReadableDatabase();
+    String query = "SELECT * FROM " + TABLE_ROUTES + " WHERE " + KEY_ROUTE_ID + "=?";
+    String[] args = {Integer.toString(mapId)};
+    Cursor cursor = db.rawQuery(query, args);
+
+    return cursor;
   }
 
 
   public Cursor getMarkers(int mapId){
     SQLiteDatabase db  = this.getReadableDatabase();
-    String query = "SELECT * FROM " + TABLE_MARKERS + " WHERE " + FK_MARKER_MAP_ID + " = " + mapId + " ORDER BY " + KEY_MARKER_ORDER + " ASC";
-    Cursor data = db.rawQuery(query, null);
-
-    //db.close();
+    String query = "SELECT * FROM " + TABLE_MARKERS + " WHERE " + FK_MARKER_MAP_ID + " = ? ORDER BY " + KEY_MARKER_ORDER + " ASC";
+    String str = "" + mapId;
+    String[] args = {str};
+    Cursor data = db.rawQuery(query, args);
 
     return data;
   }
@@ -163,8 +167,6 @@ public class RouteDatabaseHelper extends SQLiteOpenHelper {
 
     //db.delete(TABLE_ROUTES, "" + KEY_ROUTE_ID + "=" + id, null);
 
-    //db.close();
-
     return 0;
   }
 
@@ -172,8 +174,6 @@ public class RouteDatabaseHelper extends SQLiteOpenHelper {
   public int clearMarkers(int id){
     SQLiteDatabase db  = this.getWritableDatabase();
     int rowsAffected = db.delete(TABLE_ROUTES, KEY_ROUTE_ID + "=" + id, null);
-
-    //db.close();
 
     return rowsAffected;
   }
@@ -189,8 +189,6 @@ public class RouteDatabaseHelper extends SQLiteOpenHelper {
 
     long rowId = db.insert(TABLE_MARKERS, null, contentValues);
 
-    //db.close();
-
     return rowId;
   }
 
@@ -201,8 +199,6 @@ public class RouteDatabaseHelper extends SQLiteOpenHelper {
     contentValues.put(KEY_ROUTE_NAME, routeName);
     int rowsAffected = db.update(TABLE_ROUTES, contentValues, KEY_ROUTE_ID + "=" + mapId, null);
 
-    //db.close();
-
     return rowsAffected;
   }
 
@@ -210,7 +206,6 @@ public class RouteDatabaseHelper extends SQLiteOpenHelper {
   public boolean isOpen(){
     SQLiteDatabase db = this.getReadableDatabase();
     boolean isOpen = db.isOpen();
-    //db.close();
     return isOpen;
   }
 }

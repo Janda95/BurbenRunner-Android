@@ -73,13 +73,24 @@ public class DatabaseHelperUnitTests {
 
 
   @Test
-  public void database_getSingleRoute(){
+  public void database_getSingleRoute_WithName(){
     String mapName = "NewRoute_KEY";
     databaseHelper.addNewRoute(mapName);
     Cursor cursor = databaseHelper.getRoutesWithName(mapName);
     cursor.moveToFirst();
     String result = cursor.getString(1);
     assertEquals(result, mapName);
+  }
+
+
+  @Test
+  public void database_getSingleRoute_WithRowId(){
+    String mapName = "NewRoute_KEY";
+    int row = (int) databaseHelper.addNewRoute(mapName);
+    Cursor cursor = databaseHelper.getRouteWithId(row);
+    cursor.moveToFirst();
+    int result = cursor.getInt(0);
+    assertEquals(result, row);
   }
 
 
@@ -102,6 +113,19 @@ public class DatabaseHelperUnitTests {
     result = cursor.getString(1);
     assertEquals(result, mapNameTwo);
   }
+
+
+  @Test
+  public void database_addNewMarker(){
+    databaseHelper.clearDatabase();
+    String mapName = "RouteForNewMarkerTest";
+    int routeRow = (int) databaseHelper.addNewRoute(mapName);
+
+    int markerRow = (int) databaseHelper.saveMarker(0, 0.00, 0.00, routeRow);
+
+    assertTrue(markerRow != -1);
+  }
+
 
   /*@Test
   public void database_(){

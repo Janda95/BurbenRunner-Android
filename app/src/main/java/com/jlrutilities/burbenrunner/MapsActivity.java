@@ -435,6 +435,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     // Save marker info to db as map
     mDatabaseHelper.clearMarkers(mapId);
+    Cursor cursor = mDatabaseHelper.getRouteWithId(mapId);
+    if(cursor.moveToFirst() == false){
+      toastMessage("Route does not exist in DB");
+      return;
+    }
 
     for( int i = 0; i < markers.size(); i++){
       Marker marker = markers.get(i);
