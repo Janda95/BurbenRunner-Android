@@ -2,11 +2,13 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item android:id="@+id/listNewRouteMenu"
+        android:icon="@drawable/baseline_add_white_36"
         android:title="+"
         app:showAsAction="always"
         android:onClick="newRoute"/>
     <item android:id="@+id/listHelpMenu"
         android:title="Help"
+        android:icon="@drawable/round_help_white_36"
         app:showAsAction="always"
         android:onClick="displayListHelpDialog"/>
 </menu>

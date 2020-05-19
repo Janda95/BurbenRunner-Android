@@ -66,8 +66,16 @@ public class ListActivity extends AppCompatActivity implements DeletionConfirmDi
         dialogFragment.show(getSupportFragmentManager(), "delete_route_dialog_fragment");
       }
     };
+  }
 
-    // Listener then populate list
+
+  /*
+  *   Populating List data in onResume so it is always called if ListActivity is destroyed or paused
+  * on transition to Map Activity and back
+  * */
+  @Override
+  protected void onResume(){
+    super.onResume();
     populateListData();
   }
 
@@ -96,10 +104,9 @@ public class ListActivity extends AppCompatActivity implements DeletionConfirmDi
 
 
   private void populateListData(){
-    Log.d(TAG, "populateListView: Displaying data in the ListView.");
-
     Cursor data = mDatabaseHelper.getRoutes();
-    // walking through cursor getting id and map name
+
+    // walking through cursor getting map information
     if(data == null){
       toastMessage("Error: Database Cursor is null");
       return;
@@ -123,6 +130,7 @@ public class ListActivity extends AppCompatActivity implements DeletionConfirmDi
   private void toastMessage(String message){
     Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
   }
+
 
   @Override
   public void onDeletionConfirmPositiveClick(DialogFragment dialog, int mapId) {

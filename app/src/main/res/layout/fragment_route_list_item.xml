@@ -6,7 +6,7 @@
     android:layout_height="wrap_content"
     android:gravity="center_vertical"
     android:layout_margin="4dp"
-    android:background="@drawable/custom_info_box_shape">
+    android:background="@drawable/custom_list_cell_shape">
 
 
     <ImageView

@@ -186,9 +186,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
       @Override
       public void onClick(View view) {
         // Clear all markers
-        MarkerHistoryItem item = new MarkerHistoryItem(3,  markers);
-        historyStack.push(item);
-        removeEverything();
+        if(markers.size() != 0) {
+          MarkerHistoryItem item = new MarkerHistoryItem(3,  markers);
+          historyStack.push(item);
+          removeEverything();
+        }
       }
     });
 
@@ -642,6 +644,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         == PackageManager.PERMISSION_GRANTED) {
       if (mMap != null) {
         mMap.setMyLocationEnabled(true);
+        mMap.getUiSettings().setMyLocationButtonEnabled(false);
       }
     } else {
       // Permission to access the location is missing. Show rationale and request permission

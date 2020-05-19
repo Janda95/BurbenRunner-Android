@@ -15,34 +15,37 @@
 
     <TextView
         android:id="@+id/info_text_view"
-        android:layout_width="200dp"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:background="@color/cardview_light_background"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:background="@drawable/custom_distance_info_shape"
         android:text="TextView"
         android:textAlignment="center"
         android:textSize="18sp"
         android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.497"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/fab_clear_all"
+        app:layout_constraintStart_toEndOf="@+id/fab_back"
         app:layout_constraintTop_toBottomOf="@+id/map_name_edit_text_view" />
 
 
     <EditText
         android:id="@+id/map_name_edit_text_view"
-        android:layout_width="200dp"
-        android:layout_height="wrap_content"
+        android:layout_width="0dp"
+        android:layout_height="32dp"
+        android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
-        android:background="@color/colorPrimary"
+        android:layout_marginEnd="16dp"
+        android:background="@drawable/custom_info_box_shape"
         android:gravity="center"
-        android:hint="Map Name"
+        android:hint="Name Your Route"
         android:inputType="text"
         android:maxLength="20"
         android:textColor="@color/colorWhiteBackground"
-        android:textColorHint="@color/colorSecondaryText"
+        android:textColorHint="@color/colorDefaultText"
         android:textSize="18sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/fab_clear_all"
+        app:layout_constraintStart_toEndOf="@+id/fab_back"
         app:layout_constraintTop_toTopOf="parent" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton

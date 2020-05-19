@@ -41,12 +41,20 @@ public class MyRouteRecyclerViewAdapter extends RecyclerView.Adapter<MyRouteRecy
   // Set View Holder
   @Override
   public void onBindViewHolder(final ViewHolder holder, final int position) {
+    String routeValueStr;
+
+    if(routesValues.get(position).isEmpty()){
+      routeValueStr = "No Name Route";
+    } else {
+      routeValueStr = routesValues.get(position);
+    }
+
     holder.myString =  routesValues.get(position);
     holder.myDbId = routesDBIds.get(position);
     holder.myDistance = routesDistances.get(position);
 
     holder.mIdView.setText("Pos: " + position);
-    holder.mContentView.setText("Name: " + routesValues.get(position));
+    holder.mContentView.setText(routeValueStr);
     holder.mDistanceView.setText("Distance: " + routesDistances.get(position));
     holder.mImageView.setBackgroundResource(R.drawable.baseline_my_location_black_24);
 
