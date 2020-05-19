@@ -176,8 +176,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
       public void onClick(View view) {
         saveMapMarkers();
 
-        Intent intent = new Intent(getApplicationContext(), ListActivity.class);
-        startActivity(intent);
+        //Intent intent = new Intent(getApplicationContext(), ListActivity.class);
+        //startActivity(intent);
+        finish();
       }
     });
 
@@ -212,8 +213,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
          like to save
         */
         if (originalMarkers.equals(markers)){
-          Intent intent = new Intent(getApplicationContext(), ListActivity.class);
-          startActivity(intent);
+          //Intent intent = new Intent(getApplicationContext(), ListActivity.class);
+          //startActivity(intent);
+          finish();
         } else {
           RequestSaveDialogFragment dialogFragment = RequestSaveDialogFragment.newInstance();
           dialogFragment.show(getSupportFragmentManager(), "Map_Do_Not_Save_Confirm_Fragment");
@@ -483,6 +485,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
         if(markers.size() > 1){
           calculateDistance();
+
           updateMultipleLines();
         }
         break;
@@ -617,8 +620,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     saveMapMarkers();
 
-    Intent intent = new Intent(getApplicationContext(), ListActivity.class);
-    startActivity(intent);
+    //Intent intent = new Intent(getApplicationContext(), ListActivity.class);
+    //startActivity(intent);
+    finish();
   }
 
 
@@ -626,8 +630,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
   public void onRequestDialogNegativeClick(DialogFragment dialog) {
     dialog.dismiss();
 
-    Intent intent = new Intent(getApplicationContext(), ListActivity.class);
-    startActivity(intent);
+    //Intent intent = new Intent(getApplicationContext(), ListActivity.class);
+    //startActivity(intent);
+    finish();
   }
 
 
