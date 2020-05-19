@@ -2,6 +2,7 @@
     <string name="app_name">BurbenRunner</string>
     <string name="title_activity_maps">Map</string>
     <string name="default_image_description">Default Image Description</string>
+    <string name="app_list_activity_label">Your Routes</string>
 
     <!--    Permissions    -->
     <string name="permission_rationale_location">Access to the location service is required your current location on the map.</string>
