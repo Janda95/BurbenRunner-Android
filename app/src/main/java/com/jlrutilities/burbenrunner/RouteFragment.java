@@ -101,7 +101,7 @@ public class RouteFragment extends Fragment {
 
   public interface OnListFragmentInteractionListener {
     // TODO: Update argument type and name
-    void onClickListFragmentInteraction(int position, int id, String name);
+    void onClickListFragmentInteraction(int position, int id, String name, double myDistance);
     void onLongClickListFragmentInteraction(int position, int id);
   }
 }

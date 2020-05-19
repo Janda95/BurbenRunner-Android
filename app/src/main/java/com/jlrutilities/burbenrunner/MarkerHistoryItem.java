@@ -1,5 +1,6 @@
 package com.jlrutilities.burbenrunner;
 
+import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 
 import java.util.List;
@@ -7,7 +8,6 @@ import java.util.List;
 public class MarkerHistoryItem {
 
   private String typeString;
-  private int typeInt;
   private int position;
   private Marker marker;
   private List<Marker> markerSnapshot;
@@ -59,7 +59,6 @@ public class MarkerHistoryItem {
         break;
 
     }
-    this.typeInt = typeNum;
     this.typeString = typeString;
   }
 

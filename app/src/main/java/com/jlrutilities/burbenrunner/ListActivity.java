@@ -50,13 +50,13 @@ public class ListActivity extends AppCompatActivity implements DeletionConfirmDi
 
     listener = new RouteFragment.OnListFragmentInteractionListener() {
       @Override
-      public void onClickListFragmentInteraction(int position, int id, String name) {
+      public void onClickListFragmentInteraction(int position, int id, String name, double myDistance) {
         // Transition to MapsActivity
         Intent intent = new Intent(getApplicationContext(), MapsActivity.class);
-        intent.putExtra("isNewMap", false);
-        intent.putExtra("list_position", position);
+        intent.putExtra("new_map_boolean", false);
         intent.putExtra("map_id", id);
         intent.putExtra("map_name", name);
+        intent.putExtra("map_distance", myDistance);
         startActivity(intent);
       }
 
@@ -81,7 +81,10 @@ public class ListActivity extends AppCompatActivity implements DeletionConfirmDi
 
   public void newRoute(MenuItem item){
     Intent intent = new Intent(getApplicationContext(), MapsActivity.class);
-    intent.putExtra("isNewMap", true);
+    intent.putExtra("new_map_boolean", true);
+    intent.putExtra("map_id", -1);
+    intent.putExtra("map_name", "");
+    intent.putExtra("map_distance", 1.00);
     startActivity(intent);
   }
 

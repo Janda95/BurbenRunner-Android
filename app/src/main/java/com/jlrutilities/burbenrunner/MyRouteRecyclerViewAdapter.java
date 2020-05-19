@@ -43,6 +43,7 @@ public class MyRouteRecyclerViewAdapter extends RecyclerView.Adapter<MyRouteRecy
   public void onBindViewHolder(final ViewHolder holder, final int position) {
     holder.myString =  routesValues.get(position);
     holder.myDbId = routesDBIds.get(position);
+    holder.myDistance = routesDistances.get(position);
 
     holder.mIdView.setText("Pos: " + position);
     holder.mContentView.setText("Name: " + routesValues.get(position));
@@ -55,7 +56,7 @@ public class MyRouteRecyclerViewAdapter extends RecyclerView.Adapter<MyRouteRecy
         if (null != mListener) {
           // Notify the active callbacks interface (the activity, if the
           // fragment is attached to one) that an item has been selected.
-          mListener.onClickListFragmentInteraction(position, holder.myDbId, holder.myString);
+          mListener.onClickListFragmentInteraction(position, holder.myDbId, holder.myString, holder.myDistance);
         }
       }
     });
@@ -90,6 +91,7 @@ public class MyRouteRecyclerViewAdapter extends RecyclerView.Adapter<MyRouteRecy
 
     public String myString;
     public Integer myDbId;
+    public double myDistance;
 
 
     public ViewHolder(View view) {
