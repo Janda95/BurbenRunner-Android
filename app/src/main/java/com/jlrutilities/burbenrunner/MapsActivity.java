@@ -158,7 +158,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     FloatingActionButton fabClear = findViewById(R.id.fab_clear_all);
     FloatingActionButton fabUndo = findViewById(R.id.fab_undo);
     FloatingActionButton fabBack = findViewById(R.id.fab_back);
-    FloatingActionButton fabMapType = findViewById(R.id.fab_map_type);
     FloatingActionButton fabMapHelp = findViewById(R.id.fab_map_help);
 
     fabMyLocation.setOnClickListener(new View.OnClickListener() {
@@ -223,13 +222,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
           dialogFragment.show(getSupportFragmentManager(), "Map_Do_Not_Save_Confirm_Fragment");
           // Dialog listener handles response
         }
-      }
-    });
-
-    fabMapType.setOnClickListener(new View.OnClickListener() {
-      @Override
-      public void onClick(View v) {
-
       }
     });
 

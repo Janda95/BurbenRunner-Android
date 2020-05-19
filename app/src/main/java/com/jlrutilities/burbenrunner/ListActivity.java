@@ -6,21 +6,23 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.DialogFragment;
+import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 
 public class ListActivity extends AppCompatActivity implements DeletionConfirmDialogFragment.DeletionConfirmDialogListener {
 
-  private final String TAG = "ListActivity";
-
   // Recycler View
   private RecyclerView recyclerView;
+  private TextView emptyView;
   private RecyclerView.Adapter adapter;
   RouteFragment.OnListFragmentInteractionListener listener;
 
@@ -42,6 +44,9 @@ public class ListActivity extends AppCompatActivity implements DeletionConfirmDi
 
     //Main view
     recyclerView = findViewById(R.id.include_list_fragment);
+    recyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
+
+    emptyView = findViewById(R.id.empty_view);
 
     // my own version
     listIntegerData = new ArrayList<>();
@@ -118,6 +123,15 @@ public class ListActivity extends AppCompatActivity implements DeletionConfirmDi
         listIntegerData.add(Integer.valueOf(data.getString(0)));
         listStringData.add(data.getString(1));
         listDoubleData.add(data.getDouble(2));
+      }
+
+      if (data.moveToFirst()) {
+        recyclerView.setVisibility(View.VISIBLE);
+        emptyView.setVisibility(View.GONE);
+      }
+      else {
+        recyclerView.setVisibility(View.GONE);
+        emptyView.setVisibility(View.VISIBLE);
       }
     }
 

@@ -115,30 +115,17 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fab_map_type"
+        android:id="@+id/fab_map_help"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="24dp"
-        android:backgroundTint="@color/colorWhiteBackground"
-        android:clickable="true"
-        android:src="@drawable/round_layers_black_24"
-        app:fabSize="mini"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/fab_my_location" />
-
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fab_map_help"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="24dp"
-        android:layout_marginTop="16dp"
         android:backgroundTint="@color/colorPrimary"
         android:clickable="true"
         android:src="@drawable/round_help_white_36"
         app:fabSize="mini"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/fab_undo" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/fab_my_location" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

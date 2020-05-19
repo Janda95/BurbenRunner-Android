@@ -37,7 +37,9 @@ public class MapHelpDialogFragment extends DialogFragment {
     AlertDialog alertDialog = new AlertDialog.Builder(getActivity()).create();
     alertDialog.setView(content);
 
-    stringContent = "";
+    stringContent = "- Long click on map will create a marker point \n" +
+        "- Long click on marker to drag marker to new location \n" +
+        "- Click on marker for information";
     TextView contentTv = content.findViewById(R.id.map_help_content);
     contentTv.setText(stringContent);
 
