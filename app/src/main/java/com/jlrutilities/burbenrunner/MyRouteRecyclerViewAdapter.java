@@ -44,7 +44,7 @@ public class MyRouteRecyclerViewAdapter extends RecyclerView.Adapter<MyRouteRecy
     String routeValueStr;
 
     if(routesValues.get(position).isEmpty()){
-      routeValueStr = "No Name Route";
+      routeValueStr = "Unnamed Route";
     } else {
       routeValueStr = routesValues.get(position);
     }
@@ -53,7 +53,6 @@ public class MyRouteRecyclerViewAdapter extends RecyclerView.Adapter<MyRouteRecy
     holder.myDbId = routesDBIds.get(position);
     holder.myDistance = routesDistances.get(position);
 
-    holder.mIdView.setText("Pos: " + position);
     holder.mContentView.setText(routeValueStr);
     holder.mDistanceView.setText("Distance: " + routesDistances.get(position));
     holder.mImageView.setBackgroundResource(R.drawable.baseline_my_location_black_24);
@@ -92,7 +91,6 @@ public class MyRouteRecyclerViewAdapter extends RecyclerView.Adapter<MyRouteRecy
   public class ViewHolder extends RecyclerView.ViewHolder {
 
     public final View mView;
-    public final TextView mIdView;
     public final TextView mContentView;
     public final TextView mDistanceView;
     public final ImageView mImageView;
@@ -105,7 +103,6 @@ public class MyRouteRecyclerViewAdapter extends RecyclerView.Adapter<MyRouteRecy
     public ViewHolder(View view) {
       super(view);
       mView = view;
-      mIdView = view.findViewById(R.id.item_number);
       mContentView = view.findViewById(R.id.content);
       mDistanceView = view.findViewById(R.id.distanceDesc);
       mImageView = view.findViewById(R.id.imageListIcon);

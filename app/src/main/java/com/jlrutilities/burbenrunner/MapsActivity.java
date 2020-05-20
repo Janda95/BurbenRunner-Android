@@ -200,8 +200,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         if(historyStack.size() > 0){
           MarkerHistoryItem historyItem = historyStack.pop();
           handleHistoryItem(historyItem);
-        } else {
-          toastMessage("HIST Stack empty");
         }
       }
     });
@@ -214,8 +212,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
          like to save
         */
         if (originalMarkers.equals(markers)){
-          //Intent intent = new Intent(getApplicationContext(), ListActivity.class);
-          //startActivity(intent);
           finish();
         } else {
           RequestSaveDialogFragment dialogFragment = RequestSaveDialogFragment.newInstance();
@@ -241,8 +237,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     mUiSettings = mMap.getUiSettings();
 
-    // Add a marker in Sydney and move the camera
-
     mMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
       @Override
       public View getInfoWindow(Marker marker) {
@@ -252,34 +246,32 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
       @Override
       public View getInfoContents(Marker marker) {
         View view = getLayoutInflater().inflate(R.layout.info_window, null);
+        double distToMarkFromStart = getDistanceFromStartToMarker(marker);
         TextView tvLat = view.findViewById(R.id.tvLat);
         TextView tvLng = view.findViewById(R.id.tvLng);
+        TextView tvDist = view.findViewById(R.id.tvdistance);
 
         LatLng latLng = marker.getPosition();
-        tvLat.setText("Latitude: " + latLng.latitude);
+        tvLat.setText(" Latitude: " + latLng.latitude);
         tvLng.setText("Longitude: " + latLng.longitude);
+        tvDist.setText("From Start: " + distToMarkFromStart);
 
         return view;
       }
     });
 
     // Marker Interaction Listeners
-    mMap.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
+    /*mMap.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
       @Override
       public void onMapLongClick(LatLng latLng) {
         addMarker(latLng.latitude, latLng.longitude, true);
       }
-    });
+    });*/
 
-    mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+    mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
       @Override
-      public boolean onMarkerClick(Marker marker) {
-        String msg = marker.getTitle() + " (" +
-            marker.getPosition().latitude + ", "+
-            marker.getPosition().longitude+ ")";
-        Toast.makeText(MapsActivity.this, msg, Toast.LENGTH_SHORT).show();
-
-        return false;
+      public void onMapClick(LatLng latLng) {
+        addMarker(latLng.latitude, latLng.longitude, true);
       }
     });
 
@@ -287,6 +279,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
       @Override
       public void onMarkerDragStart(Marker marker) {
         // set index on beginning of drag for replacing marker on drag end
+        marker.hideInfoWindow();
         index = markers.indexOf(marker);
         MarkerOptions options;
         if (index == 0){
@@ -526,6 +519,31 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     setInfoBox(finalResult);
   }
 
+
+  private double getDistanceFromStartToMarker(Marker marker) {
+    int indexOfMarker = markers.indexOf(marker);
+    if (indexOfMarker == 0){
+      return 0.00;
+    }
+
+    float[] result = new float[1];
+    double finalResult = 0.0;
+    for( int i = 1; i <= indexOfMarker; i++){
+      LatLng one = markers.get(i-1).getPosition();
+      LatLng two = markers.get(i).getPosition();
+      Location.distanceBetween(one.latitude, one.longitude, two.latitude, two.longitude, result);
+      finalResult += result[0];
+    }
+
+    DecimalFormat df = new DecimalFormat("#.##");
+    //double metersToKm = finalResult * 0.001;
+    //double formatDist = Double.parseDouble(df.format(metersToKm));
+    double metersToMiles = finalResult * 0.00062137;
+    double formatDist = Double.parseDouble(df.format(metersToMiles));
+
+    return formatDist;
+
+  }
 
   private void setInfoBox(double dist){
     if (isMetric) {
