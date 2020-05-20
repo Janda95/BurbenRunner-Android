@@ -5,7 +5,7 @@
     android:id="@+id/linearLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/colorWhiteBackground">
+    android:background="@color/colorPrimaryBackground">
 
     <include
         android:id="@+id/include_list_fragment"
@@ -23,11 +23,43 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
-        android:id="@+id/empty_view"
+    <LinearLayout
+        android:id="@+id/linearLayout_empty_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:gravity="center"
-        android:visibility="gone"
-        android:text="@string/no_data_available" />
+        android:orientation="vertical"
+        android:gravity="center">
+
+        <ImageView
+            android:id="@+id/empty_view_image"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:src="@drawable/baseline_my_location_black_48"
+            android:layout_margin="8dp"
+            android:visibility="gone"
+            ></ImageView>
+        <TextView
+            android:id="@+id/empty_view_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/colorAccent"
+            android:gravity="center"
+            android:layout_margin="16dp"
+            android:text="@string/no_data_available"
+            android:textSize="36dp"
+            android:visibility="gone"/>
+        <TextView
+            android:id="@+id/empty_view_description"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/colorAccent"
+            android:gravity="center"
+            android:layout_margin="8dp"
+            android:layout_marginRight="16dp"
+            android:layout_marginLeft="16dp"
+            android:text="@string/no_data_available"
+            android:textSize="18dp"
+            android:visibility="gone"/>
+    </LinearLayout>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

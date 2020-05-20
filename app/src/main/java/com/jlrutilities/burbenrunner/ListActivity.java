@@ -7,6 +7,8 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -22,7 +24,11 @@ public class ListActivity extends AppCompatActivity implements DeletionConfirmDi
 
   // Recycler View
   private RecyclerView recyclerView;
-  private TextView emptyView;
+  private TextView emptyViewTitle;
+  private TextView emptyViewDesc;
+  private ImageView emptyViewImage;
+  private LinearLayout emptyViewlinearLayout;
+
   private RecyclerView.Adapter adapter;
   RouteFragment.OnListFragmentInteractionListener listener;
 
@@ -46,7 +52,13 @@ public class ListActivity extends AppCompatActivity implements DeletionConfirmDi
     recyclerView = findViewById(R.id.include_list_fragment);
     recyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
 
-    emptyView = findViewById(R.id.empty_view);
+    emptyViewlinearLayout = findViewById(R.id.linearLayout_empty_view);
+    emptyViewTitle = findViewById(R.id.empty_view_title);
+    emptyViewDesc = findViewById(R.id.empty_view_description);
+    emptyViewImage = findViewById(R.id.empty_view_image);
+
+    emptyViewTitle.setText("Welcome to \n BurbenRunner!");
+    emptyViewDesc.setText("Use the plus icon to create your first route!");
 
     // my own version
     listIntegerData = new ArrayList<>();
@@ -127,11 +139,17 @@ public class ListActivity extends AppCompatActivity implements DeletionConfirmDi
 
       if (data.moveToFirst()) {
         recyclerView.setVisibility(View.VISIBLE);
-        emptyView.setVisibility(View.GONE);
+
+        emptyViewTitle.setVisibility(View.GONE);
+        emptyViewImage.setVisibility(View.GONE);
+        emptyViewDesc.setVisibility(View.GONE);
       }
       else {
         recyclerView.setVisibility(View.GONE);
-        emptyView.setVisibility(View.VISIBLE);
+
+        emptyViewTitle.setVisibility(View.VISIBLE);
+        emptyViewImage.setVisibility(View.VISIBLE);
+        emptyViewDesc.setVisibility(View.VISIBLE);
       }
     }
 
