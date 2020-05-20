@@ -252,8 +252,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         TextView tvDist = view.findViewById(R.id.tvdistance);
 
         LatLng latLng = marker.getPosition();
-        tvLat.setText(" Latitude: " + latLng.latitude);
-        tvLng.setText("Longitude: " + latLng.longitude);
+        DecimalFormat df = new DecimalFormat("#.#####");
+        double lat = Double.parseDouble(df.format(latLng.latitude));
+        double lng = Double.parseDouble(df.format(latLng.longitude));
+
+        tvLat.setText(" Lat: " + lat);
+        tvLng.setText("Long: " + lng);
         tvDist.setText("From Start: " + distToMarkFromStart);
 
         return view;
@@ -488,7 +492,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
       mDatabaseHelper.changeRouteName(routeName, distance, mapId);
     }
 
-
     // Save marker info to db as map
     mDatabaseHelper.clearMarkers(mapId);
     Cursor cursor = mDatabaseHelper.getRouteWithId(mapId);
@@ -542,7 +545,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     double formatDist = Double.parseDouble(df.format(metersToMiles));
 
     return formatDist;
-
   }
 
   private void setInfoBox(double dist){
