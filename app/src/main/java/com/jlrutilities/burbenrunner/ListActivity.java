@@ -27,7 +27,6 @@ public class ListActivity extends AppCompatActivity implements DeletionConfirmDi
   private TextView emptyViewTitle;
   private TextView emptyViewDesc;
   private ImageView emptyViewImage;
-  private LinearLayout emptyViewlinearLayout;
 
   private RecyclerView.Adapter adapter;
   RouteFragment.OnListFragmentInteractionListener listener;
@@ -52,12 +51,11 @@ public class ListActivity extends AppCompatActivity implements DeletionConfirmDi
     recyclerView = findViewById(R.id.include_list_fragment);
     recyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
 
-    emptyViewlinearLayout = findViewById(R.id.linearLayout_empty_view);
     emptyViewTitle = findViewById(R.id.empty_view_title);
     emptyViewDesc = findViewById(R.id.empty_view_description);
     emptyViewImage = findViewById(R.id.empty_view_image);
 
-    emptyViewTitle.setText("Welcome to \n BurbenRunner!");
+    emptyViewTitle.setText("Welcome to \n Burben Runner!");
     emptyViewDesc.setText("Use the plus icon to create your first route!");
 
     // my own version
@@ -130,7 +128,7 @@ public class ListActivity extends AppCompatActivity implements DeletionConfirmDi
     } else {
       listIntegerData.clear();
       listStringData.clear();
-      listIntegerData.clear();
+      listDoubleData.clear();
       while(data.moveToNext()){
         listIntegerData.add(Integer.valueOf(data.getString(0)));
         listStringData.add(data.getString(1));

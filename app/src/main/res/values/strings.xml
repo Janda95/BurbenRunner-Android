@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">BurbenRunner</string>
+    <string name="app_name">Burben Runner</string>
     <string name="title_activity_maps">Map</string>
     <string name="default_image_description">Default Image Description</string>
     <string name="app_list_activity_label">Your Routes</string>

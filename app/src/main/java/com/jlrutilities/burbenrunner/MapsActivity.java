@@ -237,45 +237,24 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     mUiSettings = mMap.getUiSettings();
 
-    mMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
-      @Override
-      public View getInfoWindow(Marker marker) {
-        return null;
-      }
-
-      @Override
-      public View getInfoContents(Marker marker) {
-        View view = getLayoutInflater().inflate(R.layout.info_window, null);
-        double distToMarkFromStart = getDistanceFromStartToMarker(marker);
-        TextView tvLat = view.findViewById(R.id.tvLat);
-        TextView tvLng = view.findViewById(R.id.tvLng);
-        TextView tvDist = view.findViewById(R.id.tvdistance);
-
-        LatLng latLng = marker.getPosition();
-        DecimalFormat df = new DecimalFormat("#.#####");
-        double lat = Double.parseDouble(df.format(latLng.latitude));
-        double lng = Double.parseDouble(df.format(latLng.longitude));
-
-        tvLat.setText(" Lat: " + lat);
-        tvLng.setText("Long: " + lng);
-        tvDist.setText("From Start: " + distToMarkFromStart);
-
-        return view;
-      }
-    });
-
     // Marker Interaction Listeners
-    /*mMap.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
+    mMap.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
       @Override
-      public void onMapLongClick(LatLng latLng) {
-        addMarker(latLng.latitude, latLng.longitude, true);
-      }
-    });*/
+      public void onMapLongClick(LatLng latLng) {}
+    });
 
     mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
       @Override
       public void onMapClick(LatLng latLng) {
         addMarker(latLng.latitude, latLng.longitude, true);
+      }
+    });
+
+    mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+      public boolean onMarkerClick(Marker marker) {
+        addMarker(marker.getPosition().latitude , marker.getPosition().longitude + 0.001, true);
+        // Event was handled by our code do not launch default behaviour.
+        return true;
       }
     });
 
@@ -304,7 +283,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         MarkerHistoryItem item = new MarkerHistoryItem(2, mMarker, index);
         historyStack.push(item);
         mMarker.remove();
-
       }
 
       @Override
@@ -523,34 +501,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
   }
 
 
-  private double getDistanceFromStartToMarker(Marker marker) {
-    int indexOfMarker = markers.indexOf(marker);
-    if (indexOfMarker == 0){
-      return 0.00;
-    }
-
-    float[] result = new float[1];
-    double finalResult = 0.0;
-    for( int i = 1; i <= indexOfMarker; i++){
-      LatLng one = markers.get(i-1).getPosition();
-      LatLng two = markers.get(i).getPosition();
-      Location.distanceBetween(one.latitude, one.longitude, two.latitude, two.longitude, result);
-      finalResult += result[0];
-    }
-
-    DecimalFormat df = new DecimalFormat("#.##");
-    //double metersToKm = finalResult * 0.001;
-    //double formatDist = Double.parseDouble(df.format(metersToKm));
-    double metersToMiles = finalResult * 0.00062137;
-    double formatDist = Double.parseDouble(df.format(metersToMiles));
-
-    return formatDist;
-  }
-
   private void setInfoBox(double dist){
     if (isMetric) {
       double metersToKm = dist * 0.001;
-      tvInfo.setText(String.format( "Distance: %.2f mi", metersToKm));
+      tvInfo.setText(String.format( "Distance: %.2f km", metersToKm));
 
       DecimalFormat df = new DecimalFormat("#.##");
       double formatDist = Double.parseDouble(df.format(metersToKm));
@@ -593,21 +547,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
   }
 
 
-  private void drawMultipleLines(){
-    int size = markers.size();
-    Marker markerStart = markers.get(size-2);
-    Marker markerEnd = markers.get(size-1);
-
-    PolylineOptions options = new PolylineOptions()
-        .add(markerStart.getPosition())
-        .add(markerEnd.getPosition())
-        .color(Color.RED)
-        .width(20);
-
-    polylines.add(mMap.addPolyline(options));
-  }
-
-
   private void updateMultipleLines(){
     removePolyLines();
 
@@ -634,8 +573,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     saveMapMarkers();
 
-    //Intent intent = new Intent(getApplicationContext(), ListActivity.class);
-    //startActivity(intent);
     finish();
   }
 
@@ -644,8 +581,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
   public void onRequestDialogNegativeClick(DialogFragment dialog) {
     dialog.dismiss();
 
-    //Intent intent = new Intent(getApplicationContext(), ListActivity.class);
-    //startActivity(intent);
     finish();
   }
 
@@ -656,7 +591,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         == PackageManager.PERMISSION_GRANTED) {
       if (mMap != null) {
         mMap.setMyLocationEnabled(true);
-        mMap.getUiSettings().setMyLocationButtonEnabled(false);
+        mUiSettings.setMyLocationButtonEnabled(false);
       }
     } else {
       // Permission to access the location is missing. Show rationale and request permission
@@ -668,7 +603,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
   @Override
   public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-
     if (requestCode != LOCATION_PERMISSION_REQUEST_CODE) {
       return;
     }
