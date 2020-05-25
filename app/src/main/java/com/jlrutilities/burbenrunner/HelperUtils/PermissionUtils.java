@@ -1,5 +1,5 @@
 
-package com.jlrutilities.burbenrunner;
+package com.jlrutilities.burbenrunner.HelperUtils;
 
 import android.Manifest;
 import android.app.AlertDialog;
@@ -12,6 +12,8 @@ import android.widget.Toast;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentActivity;
+
+import com.jlrutilities.burbenrunner.R;
 
 /**
  * Utility class for access to runtime permissions.

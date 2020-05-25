@@ -1,4 +1,4 @@
-package com.jlrutilities.burbenrunner;
+package com.jlrutilities.burbenrunner.Dialogs;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -11,14 +11,17 @@ import android.widget.TextView;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 
+import com.jlrutilities.burbenrunner.R;
+
+
 public class ListHelpDialogFragment extends DialogFragment {
+
   private TextView contentTv;
 
+  public ListHelpDialogFragment() {}
 
-  public ListHelpDialogFragment(){}
 
-
-  public static ListHelpDialogFragment newInstance(){
+  public static ListHelpDialogFragment newInstance() {
     Bundle args = new Bundle();
 
     ListHelpDialogFragment fragment = new ListHelpDialogFragment();
@@ -28,7 +31,7 @@ public class ListHelpDialogFragment extends DialogFragment {
 
 
   @Override
-  public Dialog onCreateDialog(@Nullable Bundle savedInstanceState){
+  public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
 
     LayoutInflater inflater = requireActivity().getLayoutInflater();
     View content = inflater.inflate(R.layout.dialog_list_help, null);
@@ -37,7 +40,7 @@ public class ListHelpDialogFragment extends DialogFragment {
     AlertDialog alertDialog = new AlertDialog.Builder(getActivity()).create();
     alertDialog.setView(content);
 
-    contentTv = (TextView) content.findViewById(R.id.list_help_content);
+    contentTv = content.findViewById(R.id.list_help_content);
     contentTv.setText("Single Click to Open Map\nLong Click to Delete\nMenu + Button to Create New Route");
 
     // setup button interactions

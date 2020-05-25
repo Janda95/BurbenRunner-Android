@@ -1,14 +1,11 @@
-package com.jlrutilities.burbenrunner;
+package com.jlrutilities.burbenrunner.Activities;
 
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -18,7 +15,15 @@ import androidx.fragment.app.DialogFragment;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.jlrutilities.burbenrunner.Dialogs.DeletionConfirmDialogFragment;
+import com.jlrutilities.burbenrunner.Dialogs.ListHelpDialogFragment;
+import com.jlrutilities.burbenrunner.Fragments.MyRouteRecyclerViewAdapter;
+import com.jlrutilities.burbenrunner.R;
+import com.jlrutilities.burbenrunner.HelperUtils.RouteDatabaseHelper;
+import com.jlrutilities.burbenrunner.Fragments.RouteFragment;
+
 import java.util.ArrayList;
+
 
 public class ListActivity extends AppCompatActivity implements DeletionConfirmDialogFragment.DeletionConfirmDialogListener {
 
@@ -26,7 +31,6 @@ public class ListActivity extends AppCompatActivity implements DeletionConfirmDi
   private RecyclerView recyclerView;
   private TextView emptyViewTitle;
   private TextView emptyViewDesc;
-  private ImageView emptyViewImage;
 
   private RecyclerView.Adapter adapter;
   RouteFragment.OnListFragmentInteractionListener listener;
@@ -53,7 +57,6 @@ public class ListActivity extends AppCompatActivity implements DeletionConfirmDi
 
     emptyViewTitle = findViewById(R.id.empty_view_title);
     emptyViewDesc = findViewById(R.id.empty_view_description);
-    emptyViewImage = findViewById(R.id.empty_view_image);
 
     emptyViewTitle.setText("Welcome to \n Burben Runner!");
     emptyViewDesc.setText("Use the plus icon to create your first route!");
@@ -139,14 +142,12 @@ public class ListActivity extends AppCompatActivity implements DeletionConfirmDi
         recyclerView.setVisibility(View.VISIBLE);
 
         emptyViewTitle.setVisibility(View.GONE);
-        emptyViewImage.setVisibility(View.GONE);
         emptyViewDesc.setVisibility(View.GONE);
       }
       else {
         recyclerView.setVisibility(View.GONE);
 
         emptyViewTitle.setVisibility(View.VISIBLE);
-        emptyViewImage.setVisibility(View.VISIBLE);
         emptyViewDesc.setVisibility(View.VISIBLE);
       }
     }

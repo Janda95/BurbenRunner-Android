@@ -1,4 +1,4 @@
-package com.jlrutilities.burbenrunner;
+package com.jlrutilities.burbenrunner.Dialogs;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -12,39 +12,39 @@ import android.widget.TextView;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 
-public class DeletionConfirmDialogFragment extends DialogFragment {
+import com.jlrutilities.burbenrunner.R;
 
-  private static final String MAP_ID_KEY = "map_id_key";
-  private int mMapId;
 
-  DeletionConfirmDialogListener listener;
+public class RequestSaveDialogFragment extends DialogFragment {
 
-  public interface  DeletionConfirmDialogListener{
-    void onDeletionConfirmPositiveClick(DialogFragment dialog, int mapId);
+  RequestSaveDialogListener listener;
+
+  public interface RequestSaveDialogListener{
+    void onRequestDialogPositiveClick(DialogFragment dialog);
+    void onRequestDialogNegativeClick(DialogFragment dialog);
   }
 
 
-  public DeletionConfirmDialogFragment(){}
+  public RequestSaveDialogFragment() {}
 
 
-  public static DeletionConfirmDialogFragment newInstance(int mapId){
+  public static RequestSaveDialogFragment newInstance() {
     Bundle args = new Bundle();
-    args.putInt(MAP_ID_KEY, mapId);
 
-    DeletionConfirmDialogFragment fragment = new DeletionConfirmDialogFragment();
+    RequestSaveDialogFragment fragment = new RequestSaveDialogFragment();
     fragment.setArguments(args);
     return fragment;
   }
 
 
   @Override
-  public void onAttach(Context context){
+  public void onAttach(Context context) {
     super.onAttach(context);
 
     // Verify that the host activity implements the callback interface
     try {
       // Instantiate the DialogListener so we can send events to the host
-      listener = (DeletionConfirmDialogListener) context;
+      listener = (RequestSaveDialogListener) context;
     } catch (ClassCastException e) {
       // The activity doesn't implement the interface, throw exception
       throw new ClassCastException(getActivity().toString()
@@ -54,34 +54,40 @@ public class DeletionConfirmDialogFragment extends DialogFragment {
 
 
   @Override
-  public Dialog onCreateDialog(@Nullable Bundle savedInstanceState){
+  public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
 
-    Bundle args = getArguments();
-    mMapId = args.getInt(MAP_ID_KEY);
     LayoutInflater inflater = requireActivity().getLayoutInflater();
     View content = inflater.inflate(R.layout.dialog_delete_confirmation, null);
 
     TextView contentTv = content.findViewById(R.id.delete_confirm_content);
-    contentTv.setText("Are you sure you would like to delete this route?");
+    contentTv.setText("Would you like to save unsaved changes?");
 
     // Custom Dialog fragment for persistence
     AlertDialog alertDialog = new AlertDialog.Builder(getActivity()).create();
     alertDialog.setView(content);
 
-    // setup button interactions
-    alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "Delete",
+    // Setup button interactions
+    alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "Save",
         new DialogInterface.OnClickListener() {
           @Override
           public void onClick(DialogInterface dialog, int which) {
-            listener.onDeletionConfirmPositiveClick(DeletionConfirmDialogFragment.this, mMapId);
+            listener.onRequestDialogPositiveClick(RequestSaveDialogFragment.this);
           }
         });
 
-    alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "Cancel",
+    alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "Skip",
         new DialogInterface.OnClickListener() {
           @Override
           public void onClick(DialogInterface dialog, int which) {
+            listener.onRequestDialogNegativeClick(RequestSaveDialogFragment.this);
+          }
+        });
 
+    alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "Cancel",
+        new DialogInterface.OnClickListener() {
+          @Override
+          public void onClick(DialogInterface dialog, int which) {
+            dialog.dismiss();
           }
         });
 

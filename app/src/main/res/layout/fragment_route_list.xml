@@ -7,6 +7,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     app:layoutManager="LinearLayoutManager"
-    tools:context="com.jlrutilities.burbenrunner.RouteFragment"
+    tools:context="com.jlrutilities.burbenrunner.Fragments.RouteFragment"
     tools:listitem="@layout/fragment_route_list_item"
     />

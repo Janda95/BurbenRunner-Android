@@ -1,9 +1,9 @@
-package com.jlrutilities.burbenrunner;
+package com.jlrutilities.burbenrunner.HelperUtils;
 
-import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 
 import java.util.List;
+
 
 public class MarkerHistoryItem {
 
@@ -19,15 +19,13 @@ public class MarkerHistoryItem {
   *  3. Clear
   *
   *  Exceptions:
-  *   Clear will delete Stack and Markers
+  *   N/A
   *
-  *  Create factory object? with general typeString in the history stack
+  *   Expansion: Factory Method
   * */
 
-  MarkerHistoryItem(){}
-
   // Clear Markers
-  MarkerHistoryItem(int type, List<Marker> markerList){
+  public MarkerHistoryItem(int type, List<Marker> markerList) {
     setTypeString(type);
     this.position = -1;
     this.marker = null;
@@ -35,7 +33,7 @@ public class MarkerHistoryItem {
   }
 
   // New Marker
-  MarkerHistoryItem(int type, Marker marker, int position){
+  public MarkerHistoryItem(int type, Marker marker, int position) {
     setTypeString(type);
     this.position = position;
     this.markerSnapshot = null;
@@ -44,7 +42,6 @@ public class MarkerHistoryItem {
 
 
   public void setTypeString(int typeNum) {
-
     switch (typeNum) {
       case 1:
         typeString = "NewMarker";
@@ -56,18 +53,17 @@ public class MarkerHistoryItem {
         typeString = "Clear";
         break;
       default:
+        typeString = "ERROR";
         break;
-
     }
-    this.typeString = typeString;
   }
 
 
-  public String getTypeString(){
+  public String getTypeString() {
     return typeString;
   }
 
-  public int getPosition(){
+  public int getPosition() {
     return position;
   }
 

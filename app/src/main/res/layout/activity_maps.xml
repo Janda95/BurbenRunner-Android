@@ -9,7 +9,7 @@
         android:name="com.google.android.gms.maps.SupportMapFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context="com.jlrutilities.burbenrunner.MapsActivity"
+        tools:context="com.jlrutilities.burbenrunner.Activities.MapsActivity"
         tools:layout_editor_absoluteX="63dp"
         tools:layout_editor_absoluteY="-60dp" />
 

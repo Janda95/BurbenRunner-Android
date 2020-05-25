@@ -1,4 +1,4 @@
-package com.jlrutilities.burbenrunner;
+package com.jlrutilities.burbenrunner.Dialogs;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -11,9 +11,12 @@ import android.widget.TextView;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 
-public class MapHelpDialogFragment extends DialogFragment {
-  private String stringContent;
+import com.jlrutilities.burbenrunner.R;
 
+
+public class MapHelpDialogFragment extends DialogFragment {
+
+  private String stringContent;
 
   public MapHelpDialogFragment(){}
 

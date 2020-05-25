@@ -5,6 +5,8 @@ import android.database.Cursor;
 
 import androidx.test.core.app.ApplicationProvider;
 
+import com.jlrutilities.burbenrunner.HelperUtils.RouteDatabaseHelper;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;

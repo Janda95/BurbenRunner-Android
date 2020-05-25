@@ -1,4 +1,4 @@
-package com.jlrutilities.burbenrunner;
+package com.jlrutilities.burbenrunner.Activities;
 
 import android.Manifest;
 import android.app.FragmentTransaction;
@@ -37,12 +37,19 @@ import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.jlrutilities.burbenrunner.Dialogs.MapHelpDialogFragment;
+import com.jlrutilities.burbenrunner.Dialogs.RequestSaveDialogFragment;
+import com.jlrutilities.burbenrunner.HelperUtils.MarkerHistoryItem;
+import com.jlrutilities.burbenrunner.HelperUtils.PermissionUtils;
+import com.jlrutilities.burbenrunner.R;
+import com.jlrutilities.burbenrunner.HelperUtils.RouteDatabaseHelper;
 
 import java.text.DecimalFormat;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
 import java.util.List;
+
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, RequestSaveDialogFragment.RequestSaveDialogListener{
 
@@ -92,7 +99,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     Intent intent = getIntent();
     isNewMap = intent.getBooleanExtra("new_map_boolean", true);
 
-    if (isNewMap == true){
+    if (isNewMap == true) {
       // New map! Need to create in DB on Save
       mapId = (int) mDatabaseHelper.addNewRoute("");
       oldDistance = 0.00;
@@ -117,12 +124,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     historyStack = new ArrayDeque<>();
 
-    // Obtain the SupportMapFragment and get notified when the map is ready to be used.
-    //SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-    //    .findFragmentById(R.id.map);
-    //mapFragment.getMapAsync(this);
-
-    MapFragment mapFragment = MapFragment.newInstance();
+    //MapFragment mapFragment = MapFragment.newInstance();
+    mapFragment = MapFragment.newInstance();
     FragmentTransaction fragmentTransaction =
         getFragmentManager().beginTransaction();
     fragmentTransaction.add(R.id.map, mapFragment);
@@ -175,8 +178,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
       public void onClick(View view) {
         saveMapMarkers();
 
-        //Intent intent = new Intent(getApplicationContext(), ListActivity.class);
-        //startActivity(intent);
+        // Go back to List Activity
         finish();
       }
     });
@@ -196,7 +198,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     fabUndo.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
-
         if(historyStack.size() > 0){
           MarkerHistoryItem historyItem = historyStack.pop();
           handleHistoryItem(historyItem);
@@ -207,9 +208,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     fabBack.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
-
-        /* if marker ArrayList do not match marker clone made in OnCreate ask user if they would
-         like to save
+        /*
+        If the marker ArrayList do not match the list<marker> clone made in OnCreate request user
+        if they want to save changes
         */
         if (originalMarkers.equals(markers)){
           finish();
@@ -265,7 +266,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         marker.hideInfoWindow();
         index = markers.indexOf(marker);
         MarkerOptions options;
-        if (index == 0){
+        if (index == 0) {
           options = new MarkerOptions()
               .position(marker.getPosition())
               .draggable(true)
@@ -341,15 +342,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
             } else {
               toastMessage("Could not connect!");
-
             }
           }
         });
   }
 
 
-  private void addMarker(double lat, double lng, boolean addtostack){
-
+  private void addMarker(double lat, double lng, boolean addtostack) {
     LatLng latLng = new LatLng(lat, lng);
     MarkerOptions options;
 
@@ -371,9 +370,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     markers.add(mMap.addMarker(options));
 
-    MarkerHistoryItem item = new MarkerHistoryItem(1, markers.get(markers.size()-1), markers.size() -1);
-
-    if (addtostack){
+    if (addtostack) {
+      MarkerHistoryItem item = new MarkerHistoryItem(1, markers.get(markers.size()-1), markers.size() -1);
       historyStack.push(item);
     }
 
@@ -381,7 +379,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
   }
 
 
-  private void addMarkerAtIndex(double lat, double lng, boolean addtostack, int index){
+  private void addMarkerAtIndex(double lat, double lng, boolean addtostack, int index) {
     LatLng latLng = new LatLng(lat, lng);
     MarkerOptions options;
 
@@ -521,17 +519,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
 
   private void removeEverything() {
-    // Multiple Lines
+    // Reset marker and polyline ArrayList
     for(Marker marker : markers){
       marker.remove();
     }
-    //markers.clear();
     markers = new ArrayList<>();
 
     for(Polyline polyline : polylines){
       polyline.remove();
     }
-    // polylines.clear();
     polylines = new ArrayList<>();
 
     calculateDistance();
@@ -562,7 +558,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
   }
 
 
-  private void toastMessage(String message){
+  private void toastMessage(String message) {
     Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
   }
 
@@ -586,7 +582,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
 
   private void enableMyLocation() {
-
     if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
         == PackageManager.PERMISSION_GRANTED) {
       if (mMap != null) {
@@ -633,5 +628,4 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     PermissionUtils.PermissionDeniedDialog
         .newInstance(true).show(getSupportFragmentManager(), "dialog");
   }
-
 }

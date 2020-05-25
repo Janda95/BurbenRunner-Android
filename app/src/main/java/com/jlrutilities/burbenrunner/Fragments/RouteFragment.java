@@ -1,4 +1,4 @@
-package com.jlrutilities.burbenrunner;
+package com.jlrutilities.burbenrunner.Fragments;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -10,6 +10,8 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.jlrutilities.burbenrunner.R;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -100,7 +102,6 @@ public class RouteFragment extends Fragment {
 
 
   public interface OnListFragmentInteractionListener {
-    // TODO: Update argument type and name
     void onClickListFragmentInteraction(int position, int id, String name, double myDistance);
     void onLongClickListFragmentInteraction(int position, int id);
   }

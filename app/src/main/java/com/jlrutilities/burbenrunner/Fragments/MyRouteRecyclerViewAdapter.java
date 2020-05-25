@@ -1,4 +1,4 @@
-package com.jlrutilities.burbenrunner;
+package com.jlrutilities.burbenrunner.Fragments;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -8,7 +8,8 @@ import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.jlrutilities.burbenrunner.RouteFragment.OnListFragmentInteractionListener;
+import com.jlrutilities.burbenrunner.Fragments.RouteFragment.OnListFragmentInteractionListener;
+import com.jlrutilities.burbenrunner.R;
 
 import java.util.List;
 
@@ -22,7 +23,7 @@ public class MyRouteRecyclerViewAdapter extends RecyclerView.Adapter<MyRouteRecy
   private final List<Double> routesDistances;
 
 
-  public MyRouteRecyclerViewAdapter(List<String> list, List<Integer> idList, List<Double> distanceList, OnListFragmentInteractionListener listener){
+  public MyRouteRecyclerViewAdapter(List<String> list, List<Integer> idList, List<Double> distanceList, OnListFragmentInteractionListener listener) {
     routesValues = list;
     routesDBIds = idList;
     routesDistances = distanceList;
@@ -43,7 +44,7 @@ public class MyRouteRecyclerViewAdapter extends RecyclerView.Adapter<MyRouteRecy
   public void onBindViewHolder(final ViewHolder holder, final int position) {
     String routeValueStr;
 
-    if(routesValues.get(position).isEmpty()){
+    if(routesValues.get(position).isEmpty()) {
       routeValueStr = "Unnamed Route";
     } else {
       routeValueStr = routesValues.get(position);
@@ -70,8 +71,8 @@ public class MyRouteRecyclerViewAdapter extends RecyclerView.Adapter<MyRouteRecy
 
     holder.mView.setOnLongClickListener(new View.OnLongClickListener() {
       @Override
-      public boolean onLongClick(View view){
-        if (null != mListener){
+      public boolean onLongClick(View view) {
+        if (null != mListener) {
           mListener.onLongClickListFragmentInteraction(position, holder.myDbId);
           //return true;
         }

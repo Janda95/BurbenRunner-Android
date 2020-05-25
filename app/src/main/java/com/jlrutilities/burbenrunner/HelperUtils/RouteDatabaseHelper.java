@@ -1,4 +1,4 @@
-package com.jlrutilities.burbenrunner;
+package com.jlrutilities.burbenrunner.HelperUtils;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -91,7 +91,7 @@ public class RouteDatabaseHelper extends SQLiteOpenHelper {
   }
 
 
-  public void clearDatabase(){
+  public void clearDatabase() {
     SQLiteDatabase db = this.getWritableDatabase();
     db.execSQL("DELETE FROM " + TABLE_MARKERS + " WHERE 1=1");
     db.execSQL("DELETE FROM " + TABLE_ROUTES + " WHERE 1=1");
@@ -114,7 +114,7 @@ public class RouteDatabaseHelper extends SQLiteOpenHelper {
   }
 
 
-  public Cursor getRoutes(){
+  public Cursor getRoutes() {
     SQLiteDatabase db  = this.getReadableDatabase();
     String query = "SELECT * FROM " + TABLE_ROUTES;
     Cursor data = db.rawQuery(query, null);
@@ -123,7 +123,7 @@ public class RouteDatabaseHelper extends SQLiteOpenHelper {
   }
 
 
-  public Cursor getRoutesWithName(String mapName){
+  public Cursor getRoutesWithName(String mapName) {
     SQLiteDatabase db = this.getReadableDatabase();
     String query = "SELECT * FROM " + TABLE_ROUTES + " WHERE " + KEY_ROUTE_NAME + "=?";
     String[] args = {mapName};
@@ -143,7 +143,7 @@ public class RouteDatabaseHelper extends SQLiteOpenHelper {
   }
 
 
-  public Cursor getMarkers(int mapId){
+  public Cursor getMarkers(int mapId) {
     SQLiteDatabase db  = this.getReadableDatabase();
     String query = "SELECT * FROM " + TABLE_MARKERS + " WHERE " + FK_MARKER_MAP_ID + " = ? ORDER BY " + KEY_MARKER_ORDER + " ASC";
     String str = "" + mapId;
@@ -154,7 +154,7 @@ public class RouteDatabaseHelper extends SQLiteOpenHelper {
   }
 
 
-  public int deleteRoute(int id){
+  public int deleteRoute(int id) {
 
     SQLiteDatabase db  = this.getWritableDatabase();
 
@@ -165,7 +165,7 @@ public class RouteDatabaseHelper extends SQLiteOpenHelper {
   }
 
 
-  public int clearMarkers(int id){
+  public int clearMarkers(int id) {
     SQLiteDatabase db  = this.getWritableDatabase();
     int rowsAffected = db.delete(TABLE_MARKERS, FK_MARKER_MAP_ID + "=" + id, null);
 
@@ -198,7 +198,7 @@ public class RouteDatabaseHelper extends SQLiteOpenHelper {
   }
 
 
-  public boolean isOpen(){
+  public boolean isOpen() {
     SQLiteDatabase db = this.getReadableDatabase();
     boolean isOpen = db.isOpen();
     return isOpen;
