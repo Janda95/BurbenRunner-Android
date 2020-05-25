@@ -551,7 +551,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
           .add(markers.get(i-1).getPosition())
           .add(markers.get(i).getPosition())
           .color(Color.RED)
-          .width(20);
+          .width(15);
 
       polylines.add(mMap.addPolyline(options));
     }

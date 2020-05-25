@@ -10,7 +10,7 @@
         android:background="@color/colorPrimary"
         android:contentDescription="@string/app_name"
         android:gravity="center_vertical|center_horizontal"
-        android:text="List Cheatsheat"
+        android:text="@string/list_dialog_title"
         android:textColor="#FFFFFF"
         android:textSize="24sp" />
 
@@ -19,5 +19,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="8dp"
-        android:text="TextView" />
+        android:textSize="18sp"
+        android:textColor="@color/colorDefaultText"
+        android:text="@string/default_empty_text" />
 </LinearLayout>
