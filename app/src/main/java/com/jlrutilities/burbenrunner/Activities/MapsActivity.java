@@ -57,7 +57,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
   private boolean mPermissionDenied = false;
 
   private GoogleMap mMap;
-  private MapFragment mapFragment;
+  //private MapFragment mapFragment;
 
   private UiSettings mUiSettings;
   private FusedLocationProviderClient fusedLocationClient;
@@ -125,7 +125,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     historyStack = new ArrayDeque<>();
 
     //MapFragment mapFragment = MapFragment.newInstance();
-    mapFragment = MapFragment.newInstance();
+    MapFragment mapFragment = MapFragment.newInstance();
     FragmentTransaction fragmentTransaction =
         getFragmentManager().beginTransaction();
     fragmentTransaction.add(R.id.map, mapFragment);
