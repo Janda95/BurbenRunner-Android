@@ -22,12 +22,15 @@ public class MyRouteRecyclerViewAdapter extends RecyclerView.Adapter<MyRouteRecy
   private final List<Integer> routesDBIds;
   private final List<Double> routesDistances;
 
+  private final String distanceType;
+
 
   public MyRouteRecyclerViewAdapter(List<String> list, List<Integer> idList, List<Double> distanceList, OnListFragmentInteractionListener listener) {
     routesValues = list;
     routesDBIds = idList;
     routesDistances = distanceList;
     mListener = listener;
+    distanceType = "DEFAULT";
   }
 
 
@@ -49,6 +52,8 @@ public class MyRouteRecyclerViewAdapter extends RecyclerView.Adapter<MyRouteRecy
     } else {
       routeValueStr = routesValues.get(position);
     }
+
+
 
     holder.myString =  routesValues.get(position);
     holder.myDbId = routesDBIds.get(position);

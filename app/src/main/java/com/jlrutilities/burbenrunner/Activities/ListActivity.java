@@ -1,6 +1,8 @@
 package com.jlrutilities.burbenrunner.Activities;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.view.Menu;
@@ -42,11 +44,23 @@ public class ListActivity extends AppCompatActivity implements DeletionConfirmDi
   // Database
   RouteDatabaseHelper mDatabaseHelper;
 
+  // Shared Pref
+  SharedPreferences sharedPref;
+
 
   @Override
   protected void onCreate(@Nullable Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_main);
+
+    String sharedPrefFile =
+        "com.jlrutilities.sharedprefs";
+    sharedPref = getSharedPreferences(sharedPrefFile, MODE_PRIVATE);
+
+    //SharedPreferences sharedPref = this.getPreferences(Context.MODE_PRIVATE);
+    //SharedPreferences.Editor editor = sharedPref.edit();
+    //editor.putString(getString(R.string.measurement_type_key), "default");
+    //editor.commit();
 
     // Database
     mDatabaseHelper = new RouteDatabaseHelper(this);

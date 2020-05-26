@@ -4,11 +4,13 @@ import android.Manifest;
 import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.location.Location;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -31,6 +33,7 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
@@ -41,8 +44,8 @@ import com.jlrutilities.burbenrunner.Dialogs.MapHelpDialogFragment;
 import com.jlrutilities.burbenrunner.Dialogs.RequestSaveDialogFragment;
 import com.jlrutilities.burbenrunner.HelperUtils.MarkerHistoryItem;
 import com.jlrutilities.burbenrunner.HelperUtils.PermissionUtils;
-import com.jlrutilities.burbenrunner.R;
 import com.jlrutilities.burbenrunner.HelperUtils.RouteDatabaseHelper;
+import com.jlrutilities.burbenrunner.R;
 
 import java.text.DecimalFormat;
 import java.util.ArrayDeque;
@@ -54,10 +57,13 @@ import java.util.List;
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, RequestSaveDialogFragment.RequestSaveDialogListener{
 
   private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
+  final static int GLOBE_WIDTH = 256;
+  final static int ZOOM_MAX = 21;
+
   private boolean mPermissionDenied = false;
 
   private GoogleMap mMap;
-  //private MapFragment mapFragment;
+  private MapFragment mapFragment;
 
   private UiSettings mUiSettings;
   private FusedLocationProviderClient fusedLocationClient;
@@ -70,6 +76,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
   EditText mapNameEtv;
   private int index;
   private boolean isMetric;
+  private double adjDistance;
   private double distance;
   private double oldDistance;
 
@@ -90,6 +97,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_maps);
 
+    SharedPreferences sharedPref = this.getPreferences(Context.MODE_PRIVATE);
+    String defaultValue = this.getString(R.string.metric_default_value);
+    //int highScore = sharedPref.getInt(getString(R.string.saved_high_score_key), defaultValue);
+
     // Database
     mDatabaseHelper = new RouteDatabaseHelper(this);
 
@@ -103,7 +114,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
       // New map! Need to create in DB on Save
       mapId = (int) mDatabaseHelper.addNewRoute("");
       oldDistance = 0.00;
-      distance = 0.00;
+      adjDistance = 0.00;
       mapName = "";
       mapNameEtv.setText(mapName);
 
@@ -111,7 +122,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
       // Already established map
       mapId = intent.getIntExtra("map_id", -1);
       oldDistance = intent.getDoubleExtra("map_distance", 0.00);
-      distance = intent.getDoubleExtra("map_distance", 0.00);
+      adjDistance = intent.getDoubleExtra("map_distance", 0.00);
     }
 
     mapName = intent.getStringExtra("map_name");
@@ -119,13 +130,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     // default settings
     isMetric = false;
-    distance = 0.00;
+    adjDistance = 0.00;
     index = -1;
 
     historyStack = new ArrayDeque<>();
 
     //MapFragment mapFragment = MapFragment.newInstance();
-    MapFragment mapFragment = MapFragment.newInstance();
+    mapFragment = MapFragment.newInstance();
     FragmentTransaction fragmentTransaction =
         getFragmentManager().beginTransaction();
     fragmentTransaction.add(R.id.map, mapFragment);
@@ -145,8 +156,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     mapNameEtv.setOnKeyListener(new View.OnKeyListener() {
       public boolean onKey(View view, int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_ENTER || keyCode == KeyEvent.ACTION_DOWN) {
-          InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
-          imm.hideSoftInputFromWindow(getWindow().getDecorView().getRootView().getWindowToken(), 0);
+          InputMethodManager imm =
+              (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+          imm.hideSoftInputFromWindow(getWindow().getDecorView().getRootView().getWindowToken(),
+              0);
           mapNameEtv.clearFocus();
           return true;
         } else {
@@ -253,7 +266,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
       public boolean onMarkerClick(Marker marker) {
-        addMarker(marker.getPosition().latitude , marker.getPosition().longitude + 0.001, true);
+        addMarker(marker.getPosition().latitude , marker.getPosition().longitude + 0.001,
+            true);
         // Event was handled by our code do not launch default behaviour.
         return true;
       }
@@ -305,16 +319,63 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     markers = new ArrayList<>();
     polylines = new ArrayList<>();
 
+    // For finding center of route
+    double lowLat = 0;
+    double highLat = 0;
+    double lowLng = 0;
+    double highLng = 0;
+
     // get route data
     Cursor cursor = mDatabaseHelper.getMarkers(mapId);
+
     if (cursor.getCount() > 0 && cursor != null) {
-      while (cursor.moveToNext()) {
-        addMarker(cursor.getDouble(2), cursor.getDouble(3), false);
+      if(cursor.moveToFirst()){
+        double lat = cursor.getDouble(2);
+        double lng = cursor.getDouble(3);
+        lowLat = lat;
+        highLat = lat;
+        lowLng = lng;
+        highLng = lng;
+
+        addMarker(lat, lng, false);
+        while (cursor.moveToNext()) {
+          lat = cursor.getDouble(2);
+          lng = cursor.getDouble(3);
+          addMarker(lat, lng, false);
+
+          if (lat > highLat) {
+            highLat = lat;
+          }
+
+          if (lat < lowLat) {
+            lowLat = lat;
+          }
+
+          if(lng > highLng) {
+            highLng = lng;
+          }
+
+          if(lng < lowLng){
+            lowLng = lng;
+          }
+        }
       }
-      cursor.moveToLast();
-      LatLng lastMarker = new LatLng(cursor.getDouble(2), cursor.getDouble(3));
-      CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(lastMarker, 14);
-      mMap.moveCamera(cameraUpdate);
+      if (lowLat != 0 && lowLng != 0 && highLat != 0 && highLng != 0) {
+        double centerLat = (lowLat + highLat) / 2;
+        double centerLng = (lowLng + highLng) / 2;
+        LatLng centerOfRoute = new LatLng(centerLat, centerLng);
+
+        DisplayMetrics displayMetrics = getApplicationContext().getResources().getDisplayMetrics();
+        float dpHeight = displayMetrics.heightPixels / displayMetrics.density;
+        float dpWidth = displayMetrics.widthPixels / displayMetrics.density;
+
+        int zoomLvl = getBoundsZoomLevel(new LatLng(highLat, highLng), new LatLng(lowLat, lowLng),
+            dpWidth, dpHeight);
+
+        CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(centerOfRoute, zoomLvl);
+        mMap.animateCamera(cameraUpdate);
+      }
+
     }
 
     // Copy of original markers
@@ -371,7 +432,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     markers.add(mMap.addMarker(options));
 
     if (addtostack) {
-      MarkerHistoryItem item = new MarkerHistoryItem(1, markers.get(markers.size()-1), markers.size() -1);
+      MarkerHistoryItem item = new MarkerHistoryItem(1, markers.get(markers.size()-1),
+          markers.size() -1);
       historyStack.push(item);
     }
 
@@ -402,7 +464,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     markers.remove(index).remove();
     markers.add(index, mMap.addMarker(options));
 
-    MarkerHistoryItem item = new MarkerHistoryItem(1, markers.get(markers.size()-1), markers.size() -1);
+    MarkerHistoryItem item = new MarkerHistoryItem(1, markers.get(markers.size()-1),
+        markers.size() -1);
 
     if (addtostack){
       historyStack.push(item);
@@ -439,7 +502,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         position = historyItem.getPosition();
         Marker mMarker = historyItem.getMarker();
 
-        addMarkerAtIndex(mMarker.getPosition().latitude, mMarker.getPosition().longitude, false, position);
+        addMarkerAtIndex(mMarker.getPosition().latitude, mMarker.getPosition().longitude,
+            false, position);
 
         break;
       case"Clear":
@@ -448,7 +512,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         removeEverything();
 
         for (int i = 0; i < list.size(); i++){
-          addMarker(list.get(i).getPosition().latitude, list.get(i).getPosition().longitude, false);
+          addMarker(list.get(i).getPosition().latitude, list.get(i).getPosition().longitude,
+              false);
         }
         if(markers.size() > 1){
           calculateDistance();
@@ -464,8 +529,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     String routeName = mapNameEtv.getText().toString();
 
     // Alter Route if values changed
-    if (mapName != routeName || oldDistance != distance) {
-      mDatabaseHelper.changeRouteName(routeName, distance, mapId);
+    if (mapName != routeName || oldDistance != adjDistance) {
+      mDatabaseHelper.changeRouteName(routeName, adjDistance, mapId);
     }
 
     // Save marker info to db as map
@@ -506,14 +571,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
       DecimalFormat df = new DecimalFormat("#.##");
       double formatDist = Double.parseDouble(df.format(metersToKm));
-      distance = formatDist;
+      adjDistance = formatDist;
     } else {
       double metersToMiles = dist * 0.00062137;
       tvInfo.setText(String.format( "Distance: %.2f mi", metersToMiles));
 
       DecimalFormat df = new DecimalFormat("#.##");
       double formatDist = Double.parseDouble(df.format(metersToMiles));
-      distance = formatDist;
+      adjDistance = formatDist;
     }
   }
 
@@ -597,12 +662,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
 
   @Override
-  public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+  public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+                                         @NonNull int[] grantResults) {
     if (requestCode != LOCATION_PERMISSION_REQUEST_CODE) {
       return;
     }
 
-    if (PermissionUtils.isPermissionGranted(permissions, grantResults, Manifest.permission.ACCESS_FINE_LOCATION)) {
+    if (PermissionUtils.isPermissionGranted(permissions, grantResults,
+        Manifest.permission.ACCESS_FINE_LOCATION)) {
       // Enable the my location layer if the permission has been granted.
       enableMyLocation();
     } else {
@@ -627,5 +694,30 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
   private void showMissingPermissionError() {
     PermissionUtils.PermissionDeniedDialog
         .newInstance(true).show(getSupportFragmentManager(), "dialog");
+  }
+
+
+  public static int getBoundsZoomLevel(LatLng northeast,LatLng southwest, float width,
+                                       float height) {
+    double latFraction = (latRad(northeast.latitude) - latRad(southwest.latitude)) / Math.PI;
+    double lngDiff = northeast.longitude - southwest.longitude;
+    double lngFraction = ((lngDiff < 0) ? (lngDiff + 360) : lngDiff) / 360;
+    double latZoom = zoom(height, GLOBE_WIDTH, latFraction);
+    double lngZoom = zoom(width, GLOBE_WIDTH, lngFraction);
+    double zoom = Math.min(Math.min(latZoom, lngZoom),ZOOM_MAX);
+    return (int)(zoom);
+  }
+
+
+  private static double latRad(double lat) {
+    double sin = Math.sin(lat * Math.PI / 180);
+    double radX2 = Math.log((1 + sin) / (1 - sin)) / 2;
+    return Math.max(Math.min(radX2, Math.PI), - Math.PI) / 2;
+  }
+
+
+  private static double zoom(double mapPx, double worldPx, double fraction) {
+    final double LN2 = .693147180559945309417;
+    return (Math.log(mapPx / worldPx / fraction) / LN2);
   }
 }
