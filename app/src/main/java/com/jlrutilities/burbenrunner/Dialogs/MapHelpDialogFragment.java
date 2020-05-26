@@ -41,8 +41,7 @@ public class MapHelpDialogFragment extends DialogFragment {
     alertDialog.setView(content);
 
     stringContent = "- Short press on map will create a marker point \n" +
-        "- Short press on marker will show marker info\n" +
-        "- Long Press on marker to drag marker to new location";
+        "Hold down the marker to drag it to a new location";
     TextView contentTv = content.findViewById(R.id.map_help_content);
     contentTv.setText(stringContent);
 
