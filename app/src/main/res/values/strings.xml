@@ -9,9 +9,9 @@
     <string name="permission_rationale_location">Access to the location service is required your current location on the map.</string>
     <string name="location_permission_denied">Location permission is required for location services. Please try again and grant access to use the location.\nIf the permission has been permanently denied, it can be enabled from the System Settings &gt; Apps &gt;.</string>
     <string name="permission_required_toast">Location permission is required for location services.</string>
-    <string name="list_dialog_title">List Cheatsheat</string>
+    <string name="list_dialog_title">Help!</string>
     <string name="default_empty_text">TextView</string>
     <string name="map_name_etv_hint">Name Your Route</string>
     <string name="metric_default_value">Metric</string>
-    <string name="measurement_type_key">mesurementTypeKey</string>
+    <string name="measurement_type_key">measurementTypeKey</string>
 </resources>

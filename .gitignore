@@ -10,6 +10,7 @@ build
 captures
 .externalNativeBuild
 .classpath
+keys.xml
 
 # Built application files
 *.apk
