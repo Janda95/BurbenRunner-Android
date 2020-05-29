@@ -43,7 +43,7 @@ The current version is not on yet on the Google Play app store, and is currently
 1. Add xml resource file
 1. Generate API Key using Google Maps Api Console
 1. Add string resouce with Api String from generated key: "< string name="google_maps_key" templateMergeStrategy="preserve" translatable="false">API_KEY_STRING</ string>"
-1. In Manifest file add a meta data tag containing api string resource: < meta-data android:name="com.google.android.geo.API_KEY" android:value="@string/google_maps_key" />
+1. In Manifest file uncomment the meta data tag containing api string resource
 
 ## How to run the application using simulator
 
