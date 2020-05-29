@@ -35,7 +35,15 @@ The current version is not on yet on the Google Play app store, and is currently
 1. Clone from Github
 1. Open with Android Studio
 1. Sync Gradle (if option is requested).
+1. Add Google Api key xml file (see below)
 1. Run application and select available device
+
+### How to add an API key to project
+
+1. Add xml resource file
+1. Generate API Key using Google Maps Api Console
+1. Add string resouce with Api String from generated key: "< string name="google_maps_key" templateMergeStrategy="preserve" translatable="false">API_KEY_STRING</ string>"
+1. In Manifest file add a meta data tag containing api string resource: < meta-data android:name="com.google.android.geo.API_KEY" android:value="@string/google_maps_key" />
 
 ## How to run the application using simulator
 
@@ -49,7 +57,7 @@ The current version is not on yet on the Google Play app store, and is currently
 
 ## How to run the application using your device
 
-### Store:
+### Store
 
 - PENDING
 
