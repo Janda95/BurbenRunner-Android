@@ -4,7 +4,13 @@ import com.google.android.gms.maps.model.Marker;
 
 import java.util.List;
 
-
+/*
+*   Used as a token object that keeps track of what type of history item it is associated with and
+* the corresponding information given on creation
+*
+*   Calling class keeps track of array of history items and uses String token and deals reverses saved
+* action from initial creation
+*/
 public class MarkerHistoryItem {
 
   private String typeString;

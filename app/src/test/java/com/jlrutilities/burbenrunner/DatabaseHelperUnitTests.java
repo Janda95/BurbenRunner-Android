@@ -128,8 +128,101 @@ public class DatabaseHelperUnitTests {
     assertTrue(markerRow != -1);
   }
 
-  /*@Test
-  public void addition_isCorrect() {
-    assertEquals(3, 2 + 2);
-  }*/
+
+  @Test
+  public void database_getAllMarkers() {
+    databaseHelper.clearDatabase();
+    int routeRow = (int) databaseHelper.addNewRoute("a_cool_map");
+
+    databaseHelper.saveMarker(0, 0.00, 0.00, routeRow);
+    databaseHelper.saveMarker(1, 0.00, 0.00, routeRow);
+    databaseHelper.saveMarker(2, 0.00, 0.00, routeRow);
+    databaseHelper.saveMarker(3, 0.00, 0.00, routeRow);
+
+    Cursor cursor = databaseHelper.getMarkers(routeRow);
+
+    assertEquals(cursor.getCount(), 4);
+  }
+
+
+  @Test
+  public void database_deleteRoute() {
+    databaseHelper.clearDatabase();
+    int routeRow = (int) databaseHelper.addNewRoute("delete_route");
+
+    int rowsAffected = databaseHelper.deleteRoute(routeRow);
+
+    assertEquals(rowsAffected, 1);
+  }
+
+
+  @Test
+  public void database_deleteRoute_withMarkers() {
+    databaseHelper.clearDatabase();
+    int routeRow = (int) databaseHelper.addNewRoute("delete_route");
+
+    databaseHelper.saveMarker(0, 0.00, 0.00, routeRow);
+    databaseHelper.saveMarker(1, 0.00, 0.00, routeRow);
+    databaseHelper.saveMarker(2, 0.00, 0.00, routeRow);
+    databaseHelper.saveMarker(3, 0.00, 0.00, routeRow);
+
+    Cursor before = databaseHelper.getMarkers(routeRow);
+
+    databaseHelper.deleteRoute(routeRow);
+
+    Cursor after = databaseHelper.getMarkers(routeRow);
+
+    assertTrue(before.getCount() != after.getCount());
+    assertEquals(after.getCount(), 0);
+  }
+
+
+  @Test
+  public void database_clearMarkersWithMapId() {
+    databaseHelper.clearDatabase();
+    int routeRow = (int) databaseHelper.addNewRoute("delete_markers");
+
+    databaseHelper.saveMarker(0, 0.00, 0.00, routeRow);
+    databaseHelper.saveMarker(1, 0.00, 0.00, routeRow);
+    databaseHelper.saveMarker(2, 0.00, 0.00, routeRow);
+    databaseHelper.saveMarker(3, 0.00, 0.00, routeRow);
+
+    Cursor before = databaseHelper.getMarkers(routeRow);
+    databaseHelper.clearMarkers(routeRow);
+    Cursor after = databaseHelper.getMarkers(routeRow);
+
+    assertEquals(after.getCount(), 0);
+  }
+
+
+  @Test
+  public void database_changeRouteName() {
+    databaseHelper.clearDatabase();
+    String nameBefore = "Before";
+    String nameAfter = "After";
+    int routeRow = (int) databaseHelper.addNewRoute(nameBefore);
+
+    databaseHelper.changeRouteInfo(nameAfter, 0.00, routeRow);
+
+    Cursor cursor = databaseHelper.getRouteWithId(routeRow);
+    cursor.moveToFirst();
+    assertTrue(cursor.getString(1) != nameBefore);
+    assertEquals(cursor.getString(1), nameAfter);
+  }
+
+
+  @Test
+  public void database_changeRouteDistance(){
+    databaseHelper.clearDatabase();
+    String name = "name";
+    int routeRow = (int) databaseHelper.addNewRoute(name);
+
+    databaseHelper.changeRouteInfo(name, 1.11, routeRow);
+
+    Cursor cursor = databaseHelper.getRouteWithId(routeRow);
+    cursor.moveToFirst();
+    assertTrue(cursor.getDouble(2) != 0.00);
+    assertTrue(cursor.getDouble(2) == 1.11);
+  }
+
 }

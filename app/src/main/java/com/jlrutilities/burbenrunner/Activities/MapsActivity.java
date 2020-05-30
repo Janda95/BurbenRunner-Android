@@ -33,7 +33,6 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
@@ -530,7 +529,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     // Alter Route if values changed
     if (mapName != routeName || oldDistance != adjDistance) {
-      mDatabaseHelper.changeRouteName(routeName, adjDistance, mapId);
+      mDatabaseHelper.changeRouteInfo(routeName, adjDistance, mapId);
     }
 
     // Save marker info to db as map

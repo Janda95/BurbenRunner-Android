@@ -27,9 +27,9 @@ android:
     - sys-img-armeabi-v7a-android-17
 
 # safelist
-branches:
-  only:
-  - master
+# branches:
+#   only:
+#   - master
 
 # Emulator Management: Create, Start and Wait
 # before_script:
