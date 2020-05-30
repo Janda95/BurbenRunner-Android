@@ -15,7 +15,7 @@ import static org.junit.Assert.assertEquals;
  *
  * @see <a href="http://d.android.com/tools/testing">Testing documentation</a>
  */
-@RunWith(AndroidJUnit4ClassRunner.class)
+/*@RunWith(AndroidJUnit4ClassRunner.class)
 public class ExampleInstrumentedTest {
   @Test
   public void useAppContext() {
@@ -24,4 +24,4 @@ public class ExampleInstrumentedTest {
 
     assertEquals("com.jlrutilities.burbenrunner", appContext.getPackageName());
   }
-}
+}*/

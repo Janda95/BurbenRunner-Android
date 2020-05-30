@@ -128,14 +128,8 @@ public class DatabaseHelperUnitTests {
     assertTrue(markerRow != -1);
   }
 
-
   /*@Test
-  public void database_(){
-    assertEquals(,);
-  }*/
-
-  @Test
   public void addition_isCorrect() {
-    assertEquals(4, 2 + 2);
-  }
+    assertEquals(3, 2 + 2);
+  }*/
 }
