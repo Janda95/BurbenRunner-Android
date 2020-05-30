@@ -167,12 +167,13 @@ public class DatabaseHelperUnitTests {
     databaseHelper.saveMarker(3, 0.00, 0.00, routeRow);
 
     Cursor before = databaseHelper.getMarkers(routeRow);
+    int beforeCount = before.getCount();
 
     databaseHelper.deleteRoute(routeRow);
 
     Cursor after = databaseHelper.getMarkers(routeRow);
 
-    assertTrue(before.getCount() != after.getCount());
+    assertTrue(beforeCount != after.getCount());
     assertEquals(after.getCount(), 0);
   }
 
