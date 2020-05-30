@@ -30,7 +30,6 @@ android:
 branches:
   only:
   - master
-  - dev
 
 # Emulator Management: Create, Start and Wait
 # before_script:
