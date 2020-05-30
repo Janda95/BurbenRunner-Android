@@ -2,7 +2,7 @@
 
 ## Master : [![Build Status](https://travis-ci.org/Janda95/BurbenRunner.svg?branch=master)](https://travis-ci.org/Janda95/BurbenRunner)
 
-## Development : [![Build Status](https://travis-ci.org/Janda95/BurbenRunner.svg?branch=dev)](https://travis-ci.org/Janda95/BurbenRunner) 
+## Development : [![Build Status](https://travis-ci.org/Janda95/BurbenRunner.svg?branch=dev)](https://travis-ci.org/Janda95/BurbenRunner)
 
 ## Summary
 
