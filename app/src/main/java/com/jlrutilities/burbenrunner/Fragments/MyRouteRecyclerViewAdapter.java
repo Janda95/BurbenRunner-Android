@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.jlrutilities.burbenrunner.Fragments.RouteFragment.OnListFragmentInteractionListener;
 import com.jlrutilities.burbenrunner.R;
 
+import java.text.DecimalFormat;
 import java.util.List;
 
 
@@ -21,16 +22,15 @@ public class MyRouteRecyclerViewAdapter extends RecyclerView.Adapter<MyRouteRecy
   private final List<String> routesValues;
   private final List<Integer> routesDBIds;
   private final List<Double> routesDistances;
+  private final boolean isMetric;
 
-  private final String distanceType;
 
-
-  public MyRouteRecyclerViewAdapter(List<String> list, List<Integer> idList, List<Double> distanceList, OnListFragmentInteractionListener listener) {
+  public MyRouteRecyclerViewAdapter(List<String> list, List<Integer> idList, List<Double> distanceList, boolean isMetric, OnListFragmentInteractionListener listener) {
     routesValues = list;
     routesDBIds = idList;
     routesDistances = distanceList;
     mListener = listener;
-    distanceType = "DEFAULT";
+    this.isMetric = isMetric;
   }
 
 
@@ -53,14 +53,19 @@ public class MyRouteRecyclerViewAdapter extends RecyclerView.Adapter<MyRouteRecy
       routeValueStr = routesValues.get(position);
     }
 
-
+    double formattedDist = getFormattedDistance(routesDistances.get(position));
+    if (isMetric) {
+      holder.mDistanceView.setText("Distance in Kilometers: " + formattedDist);
+    } else {
+      holder.mDistanceView.setText("Distance in Miles: " + formattedDist);
+    }
 
     holder.myString =  routesValues.get(position);
     holder.myDbId = routesDBIds.get(position);
     holder.myDistance = routesDistances.get(position);
 
     holder.mContentView.setText(routeValueStr);
-    holder.mDistanceView.setText("Distance: " + routesDistances.get(position));
+    //holder.mDistanceView.setText("Distance: " + routesDistances.get(position));
     holder.mImageView.setBackgroundResource(R.drawable.baseline_my_location_black_24);
 
     holder.mView.setOnClickListener(new View.OnClickListener() {
@@ -84,6 +89,23 @@ public class MyRouteRecyclerViewAdapter extends RecyclerView.Adapter<MyRouteRecy
         return false;
       }
     });
+  }
+
+
+  private double getFormattedDistance(double dist){
+    DecimalFormat df = new DecimalFormat("#.##");
+
+    if (isMetric) {
+      double metersToKm = dist * 0.001;
+      double formatDist = Double.parseDouble(df.format(metersToKm));
+
+      return formatDist;
+    } else {
+      double metersToMiles = dist * 0.00062137;
+      double formatDist = Double.parseDouble(df.format(metersToMiles));
+
+      return formatDist;
+    }
   }
 
 

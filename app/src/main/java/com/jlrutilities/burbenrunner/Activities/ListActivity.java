@@ -35,32 +35,31 @@ public class ListActivity extends AppCompatActivity implements DeletionConfirmDi
   private TextView emptyViewDesc;
 
   private RecyclerView.Adapter adapter;
-  RouteFragment.OnListFragmentInteractionListener listener;
+  private RouteFragment.OnListFragmentInteractionListener listener;
 
-  ArrayList<Integer> listIntegerData;
-  ArrayList<String> listStringData;
-  ArrayList<Double> listDoubleData;
+  private ArrayList<Integer> listIntegerData;
+  private ArrayList<String> listStringData;
+  private ArrayList<Double> listDoubleData;
 
   // Database
-  RouteDatabaseHelper mDatabaseHelper;
+  private RouteDatabaseHelper mDatabaseHelper;
 
-  // Shared Pref
-  SharedPreferences sharedPref;
+  // Shared Preferences object
+  private SharedPreferences mSharedPref;
 
+  // Name of shared preferences file
+  private String sharedPrefFile = "com.jlrutilities.sharedprefs";
+
+  // Key for metric boolean
+  private final String MEASUREMENT_KEY = "measure";
+  private boolean isMetric;
 
   @Override
   protected void onCreate(@Nullable Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_main);
 
-    String sharedPrefFile =
-        "com.jlrutilities.sharedprefs";
-    sharedPref = getSharedPreferences(sharedPrefFile, MODE_PRIVATE);
-
-    //SharedPreferences sharedPref = this.getPreferences(Context.MODE_PRIVATE);
-    //SharedPreferences.Editor editor = sharedPref.edit();
-    //editor.putString(getString(R.string.measurement_type_key), "default");
-    //editor.commit();
+    mSharedPref = getSharedPreferences(sharedPrefFile, MODE_PRIVATE);
 
     // Database
     mDatabaseHelper = new RouteDatabaseHelper(this);
@@ -108,7 +107,18 @@ public class ListActivity extends AppCompatActivity implements DeletionConfirmDi
   @Override
   protected void onResume(){
     super.onResume();
+    isMetric = mSharedPref.getBoolean(MEASUREMENT_KEY, true);
     populateListData();
+  }
+
+
+  @Override
+  protected void onPause(){
+    super.onPause();
+
+    SharedPreferences.Editor prefEditor = mSharedPref.edit();
+    prefEditor.putBoolean(MEASUREMENT_KEY, isMetric);
+    prefEditor.apply();
   }
 
 
@@ -167,7 +177,7 @@ public class ListActivity extends AppCompatActivity implements DeletionConfirmDi
     }
 
     // Create new adapter
-    adapter = new MyRouteRecyclerViewAdapter(listStringData, listIntegerData, listDoubleData, listener);
+    adapter = new MyRouteRecyclerViewAdapter(listStringData, listIntegerData, listDoubleData, isMetric, listener);
     recyclerView.setAdapter(adapter);
   }
 

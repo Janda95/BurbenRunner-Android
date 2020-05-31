@@ -76,7 +76,7 @@ public class RouteFragment extends Fragment {
       } else {
         recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
       }
-      recyclerView.setAdapter(new MyRouteRecyclerViewAdapter(exampleList, exampleNumbers, exampleDistance, mListener));
+      recyclerView.setAdapter(new MyRouteRecyclerViewAdapter(exampleList, exampleNumbers, exampleDistance, false, mListener));
     }
     return view;
   }

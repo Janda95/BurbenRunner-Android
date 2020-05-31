@@ -74,7 +74,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
   TextView tvInfo;
   EditText mapNameEtv;
   private int index;
-  private boolean isMetric;
   private double adjDistance;
   private double distance;
   private double oldDistance;
@@ -84,11 +83,31 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
   private String mapName;
   private boolean isNewMap;
 
+  // Floating action buttons - FAB
+  FloatingActionButton fabMyLocation;
+  FloatingActionButton fabSave;
+  FloatingActionButton fabClear;
+  FloatingActionButton fabUndo;
+  FloatingActionButton fabBack;
+  FloatingActionButton fabMapHelp;
+  FloatingActionButton fabChangeDistanceType;
+
+
   // Database
   RouteDatabaseHelper mDatabaseHelper;
 
   // Marker History
   Deque<MarkerHistoryItem> historyStack;
+
+  // Shared Preferences object
+  private SharedPreferences mSharedPref;
+
+  // Name of shared preferences file
+  private String sharedPrefFile = "com.jlrutilities.sharedprefs";
+
+  // Key for metric boolean
+  private final String MEASUREMENT_KEY = "measure";
+  private boolean isMetric;
 
 
   @Override
@@ -96,12 +115,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_maps);
 
-    SharedPreferences sharedPref = this.getPreferences(Context.MODE_PRIVATE);
-    String defaultValue = this.getString(R.string.metric_default_value);
-    //int highScore = sharedPref.getInt(getString(R.string.saved_high_score_key), defaultValue);
-
-    // Database
+    // Database and Shared Preferences File
     mDatabaseHelper = new RouteDatabaseHelper(this);
+    mSharedPref = getSharedPreferences(sharedPrefFile, MODE_PRIVATE);
 
     mapNameEtv = findViewById(R.id.map_name_edit_text_view);
 
@@ -128,7 +144,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     mapNameEtv.setText(mapName);
 
     // default settings
-    isMetric = false;
+    isMetric = mSharedPref.getBoolean(MEASUREMENT_KEY, true);
     adjDistance = 0.00;
     index = -1;
 
@@ -168,78 +184,73 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     });
 
     // FAB
-    FloatingActionButton fabMyLocation = findViewById(R.id.fab_my_location);
-    FloatingActionButton fabSave = findViewById(R.id.fab_save);
-    FloatingActionButton fabClear = findViewById(R.id.fab_clear_all);
-    FloatingActionButton fabUndo = findViewById(R.id.fab_undo);
-    FloatingActionButton fabBack = findViewById(R.id.fab_back);
-    FloatingActionButton fabMapHelp = findViewById(R.id.fab_map_help);
+    fabMyLocation = findViewById(R.id.fab_my_location);
+    fabSave = findViewById(R.id.fab_save);
+    fabClear = findViewById(R.id.fab_clear_all);
+    fabUndo = findViewById(R.id.fab_undo);
+    fabBack = findViewById(R.id.fab_back);
+    fabMapHelp = findViewById(R.id.fab_map_help);
+    fabChangeDistanceType = findViewById(R.id.fab_mi_km_switch);
 
-    fabMyLocation.setOnClickListener(new View.OnClickListener() {
-      @Override
-      public void onClick(View view) {
-        // Check Permissions
-        if(mPermissionDenied == false) { enableMyLocation(); }
+    changeDistanceFabImage();
 
-        getLastLocation();
+    fabMyLocation.setOnClickListener(view -> {
+      // Check Permissions
+      if(mPermissionDenied == false) { enableMyLocation(); }
+
+      getLastLocation();
+    });
+
+    fabSave.setOnClickListener(view -> {
+      saveMapMarkers();
+
+      // Go back to List Activity
+      finish();
+    });
+
+    fabClear.setOnClickListener(view -> {
+      // Clear all markers
+      if(markers.size() != 0) {
+        MarkerHistoryItem item = new MarkerHistoryItem(3,  markers);
+        historyStack.push(item);
+        removeEverything();
       }
     });
 
-    fabSave.setOnClickListener(new View.OnClickListener() {
-      @Override
-      public void onClick(View view) {
-        saveMapMarkers();
+    fabUndo.setOnClickListener(view -> {
+      if(historyStack.size() > 0){
+        MarkerHistoryItem historyItem = historyStack.pop();
+        handleHistoryItem(historyItem);
+      }
+    });
 
-        // Go back to List Activity
+    fabBack.setOnClickListener(view -> {
+      /*
+      If the marker ArrayList do not match the list<marker> clone made in OnCreate request user
+      if they want to save changes
+      */
+      if (originalMarkers.equals(markers)){
         finish();
+      } else {
+        RequestSaveDialogFragment dialogFragment = RequestSaveDialogFragment.newInstance();
+        dialogFragment.show(getSupportFragmentManager(), "Map_Do_Not_Save_Confirm_Fragment");
+        // Dialog listener handles response
       }
     });
 
-    fabClear.setOnClickListener(new View.OnClickListener() {
-      @Override
-      public void onClick(View view) {
-        // Clear all markers
-        if(markers.size() != 0) {
-          MarkerHistoryItem item = new MarkerHistoryItem(3,  markers);
-          historyStack.push(item);
-          removeEverything();
-        }
-      }
+    fabMapHelp.setOnClickListener(view -> {
+      MapHelpDialogFragment helpDialog = MapHelpDialogFragment.newInstance();
+      helpDialog.show(getSupportFragmentManager(), "Map_Help_Dialog_Fragment");
     });
 
-    fabUndo.setOnClickListener(new View.OnClickListener() {
-      @Override
-      public void onClick(View v) {
-        if(historyStack.size() > 0){
-          MarkerHistoryItem historyItem = historyStack.pop();
-          handleHistoryItem(historyItem);
-        }
+    fabChangeDistanceType.setOnClickListener(view -> {
+      if(isMetric){
+        isMetric = false;
+      } else {
+        isMetric = true;
       }
-    });
-
-    fabBack.setOnClickListener(new View.OnClickListener() {
-      @Override
-      public void onClick(View v) {
-        /*
-        If the marker ArrayList do not match the list<marker> clone made in OnCreate request user
-        if they want to save changes
-        */
-        if (originalMarkers.equals(markers)){
-          finish();
-        } else {
-          RequestSaveDialogFragment dialogFragment = RequestSaveDialogFragment.newInstance();
-          dialogFragment.show(getSupportFragmentManager(), "Map_Do_Not_Save_Confirm_Fragment");
-          // Dialog listener handles response
-        }
-      }
-    });
-
-    fabMapHelp.setOnClickListener(new View.OnClickListener() {
-      @Override
-      public void onClick(View v) {
-        MapHelpDialogFragment helpDialog = MapHelpDialogFragment.newInstance();
-        helpDialog.show(getSupportFragmentManager(), "Map_Help_Dialog_Fragment");
-      }
+      calculateDistance();
+      changeDistanceFabImage();
     });
   }
 
@@ -382,6 +393,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     // Check for Location permission
     enableMyLocation();
+  }
+
+
+  @Override
+  protected void onPause(){
+    super.onPause();
+    SharedPreferences.Editor prefEditor = mSharedPref.edit();
+    prefEditor.putBoolean(MEASUREMENT_KEY, isMetric);
+    prefEditor.apply();
   }
 
 
@@ -558,7 +578,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
       Location.distanceBetween(one.latitude, one.longitude, two.latitude, two.longitude, result);
       finalResult += result[0];
     }
-
+    adjDistance = finalResult;
     setInfoBox(finalResult);
   }
 
@@ -570,14 +590,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
       DecimalFormat df = new DecimalFormat("#.##");
       double formatDist = Double.parseDouble(df.format(metersToKm));
-      adjDistance = formatDist;
+      // adjDistance = formatDist;
     } else {
       double metersToMiles = dist * 0.00062137;
       tvInfo.setText(String.format( "Distance: %.2f mi", metersToMiles));
 
       DecimalFormat df = new DecimalFormat("#.##");
       double formatDist = Double.parseDouble(df.format(metersToMiles));
-      adjDistance = formatDist;
+      // adjDistance = formatDist;
     }
   }
 
@@ -718,5 +738,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
   private static double zoom(double mapPx, double worldPx, double fraction) {
     final double LN2 = .693147180559945309417;
     return (Math.log(mapPx / worldPx / fraction) / LN2);
+  }
+
+
+  private void changeDistanceFabImage() {
+    if(isMetric){
+      fabChangeDistanceType.setImageResource(R.mipmap.text_distance_mi_white);
+    } else {
+      fabChangeDistanceType.setImageResource(R.mipmap.text_distance_km_white);
+    }
   }
 }
