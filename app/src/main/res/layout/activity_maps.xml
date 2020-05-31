@@ -133,5 +133,20 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/fab_my_location" />
 
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab_mi_km_switch"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="24dp"
+        android:backgroundTint="@color/colorPrimary"
+        android:background="@color/colorWhiteBackground"
+        android:clickable="true"
+        android:focusable="true"
+        app:fabSize="mini"
+        android:src="@mipmap/text_distance_km_white"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/fab_map_help" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
