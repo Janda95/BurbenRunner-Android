@@ -55,9 +55,9 @@ public class MyRouteRecyclerViewAdapter extends RecyclerView.Adapter<MyRouteRecy
 
     double formattedDist = getFormattedDistance(routesDistances.get(position));
     if (isMetric) {
-      holder.mDistanceView.setText("Distance in Kilometers: " + formattedDist);
+      holder.mDistanceView.setText("Total Distance: " + formattedDist + " km");
     } else {
-      holder.mDistanceView.setText("Distance in Miles: " + formattedDist);
+      holder.mDistanceView.setText("Total Distance: " + formattedDist + " mi");
     }
 
     holder.myString =  routesValues.get(position);
@@ -65,7 +65,6 @@ public class MyRouteRecyclerViewAdapter extends RecyclerView.Adapter<MyRouteRecy
     holder.myDistance = routesDistances.get(position);
 
     holder.mContentView.setText(routeValueStr);
-    //holder.mDistanceView.setText("Distance: " + routesDistances.get(position));
     holder.mImageView.setBackgroundResource(R.drawable.baseline_my_location_black_24);
 
     holder.mView.setOnClickListener(new View.OnClickListener() {

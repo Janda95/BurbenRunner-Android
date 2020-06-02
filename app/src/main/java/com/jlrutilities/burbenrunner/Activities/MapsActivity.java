@@ -584,20 +584,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
 
   private void setInfoBox(double dist){
+    DecimalFormat df = new DecimalFormat("#.##");
     if (isMetric) {
       double metersToKm = dist * 0.001;
-      tvInfo.setText(String.format( "Distance: %.2f km", metersToKm));
-
-      DecimalFormat df = new DecimalFormat("#.##");
-      double formatDist = Double.parseDouble(df.format(metersToKm));
-      // adjDistance = formatDist;
+      tvInfo.setText(String.format( " Distance: \n%.2f km", metersToKm));
     } else {
       double metersToMiles = dist * 0.00062137;
-      tvInfo.setText(String.format( "Distance: %.2f mi", metersToMiles));
-
-      DecimalFormat df = new DecimalFormat("#.##");
-      double formatDist = Double.parseDouble(df.format(metersToMiles));
-      // adjDistance = formatDist;
+      tvInfo.setText(String.format( " Distance: \n%.2f mi", metersToMiles));
     }
   }
 
