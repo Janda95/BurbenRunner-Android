@@ -72,7 +72,7 @@ public class ListActivity extends AppCompatActivity implements DeletionConfirmDi
     emptyViewDesc = findViewById(R.id.empty_view_description);
 
     emptyViewTitle.setText("Welcome to \n Burben Runner!");
-    emptyViewDesc.setText("Use the plus icon to create your first route!");
+    emptyViewDesc.setText("Use the plus icon to get started and create your first route!");
 
     // my own version
     listIntegerData = new ArrayList<>();
