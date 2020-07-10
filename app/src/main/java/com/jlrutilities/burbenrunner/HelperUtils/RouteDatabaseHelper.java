@@ -158,10 +158,10 @@ public class RouteDatabaseHelper extends SQLiteOpenHelper {
 
     SQLiteDatabase db  = this.getWritableDatabase();
 
-    int markerRowsAffected = db.delete(TABLE_MARKERS, FK_MARKER_MAP_ID + "=" + id, null);
+    db.delete(TABLE_MARKERS, FK_MARKER_MAP_ID + "=" + id, null);
     int routeRowsAffected = db.delete(TABLE_ROUTES, KEY_ROUTE_ID + "=" + id, null);
 
-    return 0;
+    return routeRowsAffected;
   }
 
 
@@ -187,7 +187,7 @@ public class RouteDatabaseHelper extends SQLiteOpenHelper {
   }
 
 
-  public int changeRouteName(String routeName, double distance, int mapId) {
+  public int changeRouteInfo(String routeName, double distance, int mapId) {
     SQLiteDatabase db  = this.getWritableDatabase();
     ContentValues contentValues = new ContentValues();
     contentValues.put(KEY_ROUTE_NAME, routeName);

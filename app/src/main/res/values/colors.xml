@@ -1,11 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#318a9e</color>
-    <color name="colorPrimaryDark">#266b7a</color>
-    <color name="colorAccent">#530999</color>
+    <color name="colorPrimary">#1d8191</color>
+    <color name="colorPrimaryDark">#005463</color>
+    <color name="colorPrimaryLight">#59b1c1</color>
+    <color name="colorAccentGreen">#1d9166</color>
+    <color name="colorAccentBlue">#1d4891</color>
+    <color name="colorAccentPurple">#2C1D91</color>
+    <color name="colorAccentMagenta">#911d82</color>
+    <color name="colorSlideRight">#66ff66</color>
+    <color name="colorSlideLeft">#ff6666</color>
     <color name="colorDefaultText">#000000</color>
     <color name="colorSecondaryText">#454041</color>
-    <color name="colorPrimaryBackground">#d9f9ff</color>
+    <color name="colorLightText">#ffffff</color>
     <color name="colorFabBackground">#00ffff</color>
     <color name="colorWhiteBackground">#FFFFFF</color>
     <color name="colorGreenMarker">#27f58b</color>

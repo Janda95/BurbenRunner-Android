@@ -13,10 +13,11 @@
 
     <TextView
         android:id="@+id/info_text_view"
-        android:layout_width="0dp"
+        android:layout_width="200dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
+        android:padding="4dp"
         android:background="@drawable/custom_distance_info_shape"
         android:text="@string/default_empty_text"
         android:textAlignment="center"
@@ -29,17 +30,18 @@
 
     <EditText
         android:id="@+id/map_name_edit_text_view"
-        android:layout_width="0dp"
-        android:maxWidth="50dp"
-        android:layout_height="32dp"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
+        android:padding="4dp"
+        android:autofillHints=""
         android:background="@drawable/custom_info_box_shape"
         android:gravity="center"
-        android:autofillHints=""
         android:hint="@string/map_name_etv_hint"
         android:inputType="text"
+        android:maxWidth="50dp"
         android:maxLength="20"
         android:textColor="@color/colorWhiteBackground"
         android:textColorHint="@color/colorDefaultText"
@@ -54,6 +56,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="24dp"
+        android:padding="8dp"
         android:backgroundTint="@color/colorWhiteBackground"
         android:clickable="true"
         android:focusable="true"
@@ -132,6 +135,21 @@
         app:fabSize="mini"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/fab_my_location" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab_mi_km_switch"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="24dp"
+        android:backgroundTint="@color/colorPrimary"
+        android:background="@color/colorWhiteBackground"
+        android:clickable="true"
+        android:focusable="true"
+        app:fabSize="mini"
+        android:src="@mipmap/text_distance_km_white"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/fab_map_help" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
