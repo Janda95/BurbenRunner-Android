@@ -347,11 +347,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         lowLng = lng;
         highLng = lng;
 
-        addMarker(lat, lng, false);
+        addMarker(lat, lng, true);
         while (cursor.moveToNext()) {
           lat = cursor.getDouble(2);
           lng = cursor.getDouble(3);
-          addMarker(lat, lng, false);
+          addMarker(lat, lng, true);
 
           if (lat > highLat) {
             highLat = lat;
@@ -428,7 +428,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
   }
 
 
-  private void addMarker(double lat, double lng, boolean addtostack) {
+  private void addMarker(double lat, double lng, boolean addToStack) {
     LatLng latLng = new LatLng(lat, lng);
     MarkerOptions options;
 
@@ -450,7 +450,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     markers.add(mMap.addMarker(options));
 
-    if (addtostack) {
+    if (addToStack) {
       MarkerHistoryItem item = new MarkerHistoryItem(1, markers.get(markers.size()-1),
           markers.size() -1);
       historyStack.push(item);
