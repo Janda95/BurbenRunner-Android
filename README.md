@@ -59,7 +59,7 @@ The current version is not on yet on the Google Play app store, and is currently
 
 ### Store
 
-- PENDING
+https://play.google.com/store/apps/details?id=com.jlrutilities.burbenrunner
 
 ### Personal Device
 
